@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/pusher/pusher-cli/commands"
+	"github.com/spf13/cobra"
 )
 
 func main() {

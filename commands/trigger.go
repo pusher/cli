@@ -2,24 +2,24 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/pusher/pusher-http-go"
+	"github.com/spf13/cobra"
 	"os"
 )
 
 type AppToken struct {
-	Key string
+	Key    string
 	Secret string
 }
 
 type App struct {
-	AppId string
+	AppId   string
 	Cluster string
-	Tokens []AppToken
+	Tokens  []AppToken
 }
 
 func GetApp(appId string) *App {
-	return &App{AppId: appId, Cluster: "mt1", Tokens:[]AppToken{AppToken{"foo", "bar"}}}
+	return &App{AppId: appId, Cluster: "mt1", Tokens: []AppToken{AppToken{"foo", "bar"}}}
 }
 
 var appId string
@@ -30,14 +30,14 @@ var message string
 var Trigger = &cobra.Command{
 	Use:   "trigger",
 	Short: "Trigger an event on a Pusher app",
-	Args: cobra.NoArgs,
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		app := GetApp(appId)
 		token := app.Tokens[0]
 		client := pusher.Client{
-			AppId: appId,
-			Key: token.Key,
-			Secret: token.Secret,
+			AppId:   appId,
+			Key:     token.Key,
+			Secret:  token.Secret,
 			Cluster: app.Cluster,
 		}
 
@@ -57,4 +57,3 @@ func init() {
 	Trigger.PersistentFlags().StringVar(&channelName, "event", "", "Event name")
 	Trigger.PersistentFlags().StringVar(&channelName, "message", "", "Message")
 }
-
