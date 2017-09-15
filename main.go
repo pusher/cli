@@ -14,5 +14,6 @@ func main() {
 	rootCmd.AddCommand(commands.Subscribe)
 	rootCmd.AddCommand(commands.GenerateClient)
 	rootCmd.AddCommand(commands.GenerateServer)
+	rootCmd.AddCommand(commands.LocalAuthServer)
 	rootCmd.Execute()
 }
