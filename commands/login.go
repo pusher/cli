@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 
+	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
@@ -27,6 +28,12 @@ var Login = &cobra.Command{
 
 		conf.Password = string(passwordBytes)
 
-		fmt.Println(config.Store())
+		// check if the credentials are valid
+		_, err := api.GetAllApps()
+		if err != nil {
+			fmt.Println("Invalid credentials.")
+		} else {
+			fmt.Println("Succesfully logged in.")
+		}
 	},
 }
