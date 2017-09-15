@@ -7,12 +7,14 @@ import (
 	"os"
 	"github.com/pusher/pusher-cli/api"
 	"time"
+	"github.com/fatih/color"
 )
+
 
 var Subscribe = &cobra.Command{
 	Use:   "subscribe",
 	Short: "Subscribe to a Pusher channel",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if appId == "" {
@@ -42,7 +44,11 @@ var Subscribe = &cobra.Command{
 
 		client.Subscribe(channelName)
 
+		channelColor := color.New(color.FgCyan).Add(color.Underline)
+
 		client.BindGlobal(func (channelName string, eventName string, data interface{}) {
+			fmt.Printf("Event: ")
+			channelColor.Printf("Testing")
 			fmt.Printf("Event: channel=%s event=%s message=%v\n", channelName, eventName, data)
 		})
 
