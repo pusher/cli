@@ -44,12 +44,14 @@ var Subscribe = &cobra.Command{
 
 		client.Subscribe(channelName)
 
-		channelColor := color.New(color.FgCyan).Add(color.Underline)
+		channelColor := color.New(color.FgRed)
+		eventColor := color.New(color.FgBlue)
 
 		client.BindGlobal(func (channelName string, eventName string, data interface{}) {
 			fmt.Printf("Event: ")
-			channelColor.Printf("Testing")
-			fmt.Printf("Event: channel=%s event=%s message=%v\n", channelName, eventName, data)
+			channelColor.Printf("channel=%s ", channelName)
+			eventColor.Printf("event=%s ", eventName)
+			fmt.Printf("message=%v\n", data)
 		})
 
 		time.Sleep(time.Hour)
