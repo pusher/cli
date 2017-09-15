@@ -8,7 +8,7 @@ import (
 	"github.com/pusher/pusher-cli/api"
 )
 
-var Generate = &cobra.Command{
+var GenerateClient = &cobra.Command{
 	Use:   "generate-client",
 	Short: "Generate a Pusher client for your Pusher app",
 	Args:  cobra.NoArgs,
@@ -63,6 +63,6 @@ var GenerateWeb = &cobra.Command{
 }
 
 func init() {
-	Generate.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
-	Generate.AddCommand(GenerateWeb)
+	GenerateClient.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
+	GenerateClient.AddCommand(GenerateWeb)
 }

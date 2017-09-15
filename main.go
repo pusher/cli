@@ -12,6 +12,7 @@ func main() {
 	rootCmd.AddCommand(commands.Apps)
 	rootCmd.AddCommand(commands.Trigger)
 	rootCmd.AddCommand(commands.Subscribe)
-	rootCmd.AddCommand(commands.Generate)
+	rootCmd.AddCommand(commands.GenerateClient)
+	rootCmd.AddCommand(commands.GenerateServer)
 	rootCmd.Execute()
 }
