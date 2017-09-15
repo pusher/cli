@@ -37,7 +37,7 @@ var Login = &cobra.Command{
 			os.Exit(1)
 		} else {
 			config.Store()
-			fmt.Println("Succesfully logged in.")
+			fmt.Println("Successfully logged in.")
 		}
 	},
 }
