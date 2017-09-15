@@ -9,5 +9,6 @@ func main() {
 	var rootCmd = &cobra.Command{Use: "pusher"}
 	rootCmd.AddCommand(commands.Login)
 	rootCmd.AddCommand(commands.Logout)
+	rootCmd.AddCommand(commands.Publish)
 	rootCmd.Execute()
 }
