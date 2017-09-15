@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"os"
+	"github.com/pusher/pusher-cli/api"
 )
 
 var Generate = &cobra.Command{
@@ -17,6 +19,18 @@ var GenerateWeb = &cobra.Command{
 	Short: "Generate a web client for your Pusher app",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if appId == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			return
+		}
+
+		token, err := api.GetToken(appId)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			return
+		}
+
 		html :=
 `<!DOCTYPE html>
 <head>
@@ -27,7 +41,7 @@ var GenerateWeb = &cobra.Command{
     // Enable pusher logging - don't include this in production
     Pusher.logToConsole = true;
 
-    var pusher = new Pusher('1897735b1fc466852a4d', {
+    var pusher = new Pusher('`+token.Key+`', {
       wsHost: 'ws-test1.staging.pusher.com',
       httpHost: 'sockjs-test1.staging.pusher.com',
       encrypted: true
@@ -39,7 +53,7 @@ var GenerateWeb = &cobra.Command{
     });
   </script>
 </head>`
-		err := ioutil.WriteFile("index.htm", []byte(html), 0644)
+		err = ioutil.WriteFile("index.htm", []byte(html), 0644)
 		if err != nil {
 			fmt.Printf("Could not write file: %s\n", err.Error())
 		} else {
