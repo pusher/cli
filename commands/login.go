@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+
+	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -9,13 +11,17 @@ import (
 var Login = &cobra.Command{
 	Use:   "login",
 	Short: "Enter and store Pusher account credentials",
-	Args: cobra.NoArgs,
+	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		conf := config.Get()
+
 		fmt.Println("What is your email address? ")
-		var email string
-		fmt.Scanln(&email)
+		fmt.Scanln(&conf.Email)
 		fmt.Println("What is your password? ")
-		password, _ := terminal.ReadPassword(0)
-		fmt.Printf("Email: %s, Password: %s\n", email, password)
+		passwordBytes, _ := terminal.ReadPassword(0)
+
+		conf.Password = string(passwordBytes)
+
+		fmt.Println(config.Store())
 	},
 }
