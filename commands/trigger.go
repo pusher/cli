@@ -5,6 +5,7 @@ import (
 	"github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
 	"os"
+	"github.com/pusher/pusher-cli/api"
 )
 
 type AppToken struct {
@@ -32,16 +33,23 @@ var Trigger = &cobra.Command{
 	Short: "Trigger an event on a Pusher app",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		app := GetApp(appId)
-		token := app.Tokens[0]
+
+		token, err := api.GetToken(appId)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			return
+		}
+
 		client := pusher.Client{
 			AppId:   appId,
 			Key:     token.Key,
 			Secret:  token.Secret,
-			Cluster: app.Cluster,
+			Cluster: "eu", // app.Cluster,
 		}
 
-		_, err := client.Trigger(channelName, eventName, message)
+		fmt.Printf("Triggering event: %s %s %s %s\n", appId, channelName, eventName, message)
+
+		_, err = client.Trigger(channelName, eventName, message)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not trigger: %s\n", err.Error())
 			return
@@ -54,6 +62,6 @@ var Trigger = &cobra.Command{
 func init() {
 	Trigger.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
 	Trigger.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
-	Trigger.PersistentFlags().StringVar(&channelName, "event", "", "Event name")
-	Trigger.PersistentFlags().StringVar(&channelName, "message", "", "Message")
+	Trigger.PersistentFlags().StringVar(&eventName, "event", "", "Event name")
+	Trigger.PersistentFlags().StringVar(&message, "message", "", "Message")
 }
