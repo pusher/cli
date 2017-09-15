@@ -29,6 +29,13 @@ var Subscribe = &cobra.Command{
 			return
 		}
 
+		app, err := api.GetApp(appId)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
+			os.Exit(1)
+			return
+		}
+
 		token, err := api.GetToken(appId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
@@ -36,10 +43,10 @@ var Subscribe = &cobra.Command{
 			return
 		}
 
-		pusher.New("foo")
+		pusher.New(token.Key)
 		client := pusher.NewWithConfig(pusher.ClientConfig{
 			Scheme: "wss",
-			Host:   "ws-test1.staging.pusher.com",
+			Host:   "ws-" + app.Cluster + ".staging.pusher.com",
 			Port:   "443",
 			Key:    token.Key,
 			Secret: token.Secret,
@@ -58,6 +65,10 @@ var Subscribe = &cobra.Command{
 			eventColor.Printf("event=%s ", eventName)
 			fmt.Printf("message=%v\n", data)
 		})
+
+		fmt.Printf("Successfully subscribed to channel '")
+		channelColor.Printf(channelName)
+		fmt.Printf("'.\n")
 
 		time.Sleep(time.Hour)
 	},
