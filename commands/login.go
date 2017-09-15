@@ -15,6 +15,11 @@ var Login = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.Get()
 
+		if config.Get().Email != "" && config.Get().Password != "" {
+			fmt.Printf("Already logged in as '%s'.\n", config.Get().Email)
+			return
+		}
+
 		fmt.Println("What is your email address? ")
 		fmt.Scanln(&conf.Email)
 		fmt.Println("What is your password? ")
