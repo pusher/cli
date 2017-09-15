@@ -10,10 +10,21 @@ import (
 )
 
 var Subscribe = &cobra.Command{
-	Use:   "subscribe [channel]",
+	Use:   "subscribe",
 	Short: "Subscribe to a Pusher channel",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if appId == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			return
+		}
+
+		if channelName == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --channel\n")
+			return
+		}
+
 		token, err := api.GetToken(appId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
@@ -29,11 +40,10 @@ var Subscribe = &cobra.Command{
 			Secret: token.Secret,
 		})
 
-		channelName := args[0]
 		client.Subscribe(channelName)
 
 		client.BindGlobal(func (channelName string, eventName string, data interface{}) {
-			fmt.Printf("Event received. channel=%s event=%s message=%v\n", channelName, eventName, data)
+			fmt.Printf("Event: channel=%s event=%s message=%v\n", channelName, eventName, data)
 		})
 
 		time.Sleep(time.Hour)
@@ -42,4 +52,5 @@ var Subscribe = &cobra.Command{
 
 func init() {
 	Subscribe.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
+	Subscribe.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
 }

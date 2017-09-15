@@ -34,6 +34,26 @@ var Trigger = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		if appId == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			return
+		}
+
+		if channelName == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --channel\n")
+			return
+		}
+
+		if eventName == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --event\n")
+			return
+		}
+
+		if message == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --message\n")
+			return
+		}
+
 		token, err := api.GetToken(appId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
