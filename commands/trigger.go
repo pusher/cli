@@ -46,7 +46,7 @@ var Trigger = &cobra.Command{
 
 		app, err := api.GetApp(appId)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could get the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
