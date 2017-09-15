@@ -22,21 +22,25 @@ var Trigger = &cobra.Command{
 
 		if appId == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
+			os.Exit(1)
 			return
 		}
 
 		if channelName == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --channel\n")
+			os.Exit(1)
 			return
 		}
 
 		if eventName == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --event\n")
+			os.Exit(1)
 			return
 		}
 
 		if message == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --message\n")
+			os.Exit(1)
 			return
 		}
 
