@@ -60,6 +60,8 @@ var LocalAuthServer = &cobra.Command{
 				panic(err)
 			}
 
+			resp.Header().Set("Access-Control-Allow-Origin", "*")
+
 			fmt.Fprintf(resp, string(response))
 		})
 
