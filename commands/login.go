@@ -33,6 +33,7 @@ var Login = &cobra.Command{
 		if err != nil {
 			fmt.Println("Invalid credentials.")
 		} else {
+			config.Store()
 			fmt.Println("Succesfully logged in.")
 		}
 	},
