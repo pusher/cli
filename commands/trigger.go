@@ -44,18 +44,14 @@ var Trigger = &cobra.Command{
 			AppId:   appId,
 			Key:     token.Key,
 			Secret:  token.Secret,
-			Cluster: "eu", // app.Cluster,
+			Cluster: "test1.staging", // app.Cluster,
 		}
-
-		fmt.Printf("Triggering event: %s %s %s %s\n", appId, channelName, eventName, message)
 
 		_, err = client.Trigger(channelName, eventName, message)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not trigger: %s\n", err.Error())
 			return
 		}
-
-		fmt.Printf("Triggered event: %s %s %s %s\n", appId, channelName, eventName, message)
 	},
 }
 
