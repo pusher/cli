@@ -58,7 +58,46 @@ var GeneratePhp = &cobra.Command{
 	},
 }
 
+var GeneratePython = &cobra.Command{
+	Use:   "python",
+	Short: "Generate a Python server for your Pusher app",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if appId == "" {
+			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			return
+		}
+
+		token, err := api.GetToken(appId)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			return
+		}
+
+		python :=
+    `import pusher
+
+pusher_client = pusher.Pusher(
+  app_id='`+appId+`',
+  key='`+token.Key+`',
+  secret='`+token.Secret+`',
+  host='api-test1.staging.pusher.com',
+  ssl=True
+)
+
+pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})`
+		err = ioutil.WriteFile("server.py", []byte(python), 0644)
+		if err != nil {
+			fmt.Printf("Could not write file: %s\n", err.Error())
+		} else {
+			fmt.Printf("Written file: server.py.\nPlease run: pip install pusher\n")
+		}
+	},
+}
+
 func init() {
 	GenerateServer.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
 	GenerateServer.AddCommand(GeneratePhp)
+	GenerateServer.AddCommand(GeneratePython)
 }
