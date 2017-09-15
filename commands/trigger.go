@@ -27,8 +27,8 @@ var channelName string
 var eventName string
 var message string
 
-var Publish = &cobra.Command{
-	Use:   "publish [channel]",
+var Trigger = &cobra.Command{
+	Use:   "trigger",
 	Short: "Trigger an event on a Pusher app",
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -52,9 +52,9 @@ var Publish = &cobra.Command{
 }
 
 func init() {
-	Publish.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
-	Publish.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
-	Publish.PersistentFlags().StringVar(&channelName, "event", "", "Event name")
-	Publish.PersistentFlags().StringVar(&channelName, "message", "", "Message")
+	Trigger.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
+	Trigger.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
+	Trigger.PersistentFlags().StringVar(&channelName, "event", "", "Event name")
+	Trigger.PersistentFlags().StringVar(&channelName, "message", "", "Message")
 }
 
