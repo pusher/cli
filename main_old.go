@@ -1,19 +1,19 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/pusher/pusher-http-go"
 	"github.com/urfave/cli"
-	"os"
-	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/user"
 	"path"
 )
 
 type appConfig struct {
-	Key string `json:"key"`
-	Secret string `json:"secret"`
+	Key     string `json:"key"`
+	Secret  string `json:"secret"`
 	Cluster string `json:"cluster"`
 }
 
@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("Could not read config: %s", err.Error())
 	}
 	var config config
-	err = json.Unmarshal(configFile,&config)
+	err = json.Unmarshal(configFile, &config)
 	if err != nil {
 		log.Fatalf("Could not parse config as JSON: %s", err.Error())
 	}
@@ -41,16 +41,16 @@ func main() {
 	app.HelpName = "pusher"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "app-id",
+			Name:  "app-id",
 			Usage: "Immutable ID for a Pusher app; find it on https://dashboard.pusher.com",
 		},
 	}
 	app.Commands = []cli.Command{
 		{
-			Name: "trigger",
-			Usage: "Trigger an event on a channel",
+			Name:      "trigger",
+			Usage:     "Trigger an event on a channel",
 			ArgsUsage: "<channel-name> <event-name> <data>",
-			Action: func (c *cli.Context) error {
+			Action: func(c *cli.Context) error {
 				if !c.IsSet("app-id") {
 					log.Fatalf("Please identify a Pusher app with --app-id")
 				}
@@ -64,11 +64,10 @@ func main() {
 					log.Fatalf("You have not set config for the app with id \"%s\". Please run: pusher add-app-config")
 				}
 
-
 				pusherApiClient := pusher.Client{
-					AppId: appId,
-					Key: appConfig.Key,
-					Secret: appConfig.Secret,
+					AppId:   appId,
+					Key:     appConfig.Key,
+					Secret:  appConfig.Secret,
 					Cluster: appConfig.Cluster,
 				}
 
