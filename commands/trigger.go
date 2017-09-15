@@ -2,26 +2,12 @@ package commands
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
-	"os"
-	"github.com/pusher/pusher-cli/api"
 )
-
-type AppToken struct {
-	Key    string
-	Secret string
-}
-
-type App struct {
-	AppId   string
-	Cluster string
-	Tokens  []AppToken
-}
-
-func GetApp(appId string) *App {
-	return &App{AppId: appId, Cluster: "mt1", Tokens: []AppToken{AppToken{"foo", "bar"}}}
-}
 
 var appId string
 var channelName string
@@ -35,28 +21,36 @@ var Trigger = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if appId == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			return
 		}
 
 		if channelName == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --channel\n")
+			fmt.Fprintf(os.Stderr, "Please supply --channel\n")
 			return
 		}
 
 		if eventName == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --event\n")
+			fmt.Fprintf(os.Stderr, "Please supply --event\n")
 			return
 		}
 
 		if message == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --message\n")
+			fmt.Fprintf(os.Stderr, "Please supply --message\n")
+			return
+		}
+
+		app, err := api.GetApp(appId)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could get the app: %s\n", err.Error())
+			os.Exit(1)
 			return
 		}
 
 		token, err := api.GetToken(appId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			os.Exit(1)
 			return
 		}
 
@@ -64,7 +58,7 @@ var Trigger = &cobra.Command{
 			AppId:   appId,
 			Key:     token.Key,
 			Secret:  token.Secret,
-			Cluster: "test1.staging", // app.Cluster,
+			Cluster: app.Cluster + ".staging", // app.Cluster,
 		}
 
 		_, err = client.Trigger(channelName, eventName, message)

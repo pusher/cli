@@ -1,6 +1,10 @@
 package api
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
 
 type App struct {
 	Name    string `json:"name"`
@@ -23,4 +27,19 @@ func GetAllApps() ([]App, error) {
 	}
 
 	return apps, nil
+}
+
+func GetApp(appId string) (*App, error) {
+	apps, err := GetAllApps()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, app := range apps {
+		if fmt.Sprintf("%d", app.Id) == appId {
+			return &app, nil
+		}
+	}
+
+	return nil, errors.New("Couldn't find the app id.")
 }
