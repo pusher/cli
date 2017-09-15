@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/pusher-community/pusher-websocket-go"
 	"github.com/spf13/cobra"
 )
 
@@ -9,5 +10,6 @@ var Connect = &cobra.Command{
 	Short: "Open WebSocket connection to Pusher, allowing subscription to channels",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		pusher.New("foo")
 	},
 }
