@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var Login = &cobra.Command{
@@ -14,8 +15,7 @@ var Login = &cobra.Command{
 		var email string
 		fmt.Scanln(&email)
 		fmt.Println("What is your password? ")
-		var password string
-		fmt.Scanln(&password)
+		password, _ := terminal.ReadPassword(0)
 		fmt.Printf("Email: %s, Password: %s\n", email, password)
 	},
 }
