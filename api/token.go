@@ -30,7 +30,6 @@ func GetToken(appId string) (*AppToken, error) {
 		return nil, err
 	}
 
-	fmt.Println(response)
 	tokens := []AppToken{}
 	err = json.Unmarshal([]byte(response), &tokens)
 	if err != nil {
