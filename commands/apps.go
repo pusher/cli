@@ -8,6 +8,8 @@ import (
 	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
+	"github.com/olekukonko/tablewriter"
+	"strconv"
 )
 
 var Apps = &cobra.Command{
@@ -28,8 +30,11 @@ var Apps = &cobra.Command{
 			return
 		}
 
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"App ID", "App Name", "Cluster"})
 		for _, app := range apps {
-			fmt.Printf("%+v\n", app)
+			table.Append([]string{strconv.Itoa(app.Id), app.Name, app.Cluster})
 		}
+		table.Render()
 	},
 }
