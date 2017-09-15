@@ -77,6 +77,10 @@ func Store() error {
 	return ioutil.WriteFile(getUserHomeDir()+baseDirectory+"/config.json", confJson, defaultConfigPermission)
 }
 
+func Delete() error {
+	return os.Remove(getUserHomeDir() + baseDirectory + "/config.json")
+}
+
 // IsSet checks if [configVariableName] has been set in the read config file.
 func IsSet(configVariableName string) bool {
 	return viper.IsSet(configVariableName)
