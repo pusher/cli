@@ -2,8 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/spf13/cobra"
 )
 
@@ -12,6 +10,7 @@ var Login = &cobra.Command{
 	Short: "Enter and store Pusher account credentials",
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Print: " + strings.Join(args, " "))
+		fmt.Println("What is your email address? ")
+		fmt.Println("What is your password? ")
 	},
 }

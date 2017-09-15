@@ -12,6 +12,6 @@ var Logout = &cobra.Command{
 	Short: "Remove Pusher account credentials from this computer",
 	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Print: " + strings.Join(args, " "))
+		fmt.Println("Removed Pusher account credentials. Run `pusher login` to login again.")
 	},
 }
