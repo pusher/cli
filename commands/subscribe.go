@@ -1,15 +1,15 @@
 package commands
 
 import (
-	"github.com/pusher-community/pusher-websocket-go"
-	"github.com/spf13/cobra"
 	"fmt"
 	"os"
-	"github.com/pusher/pusher-cli/api"
 	"time"
-	"github.com/fatih/color"
-)
 
+	"github.com/fatih/color"
+	"github.com/pusher-community/pusher-websocket-go"
+	"github.com/pusher/pusher-cli/api"
+	"github.com/spf13/cobra"
+)
 
 var Subscribe = &cobra.Command{
 	Use:   "subscribe",
@@ -18,27 +18,30 @@ var Subscribe = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if appId == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
+			os.Exit(1)
 			return
 		}
 
 		if channelName == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --channel\n")
+			fmt.Fprintf(os.Stderr, "Please supply --channel\n")
+			os.Exit(1)
 			return
 		}
 
 		token, err := api.GetToken(appId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			os.Exit(1)
 			return
 		}
 
 		pusher.New("foo")
 		client := pusher.NewWithConfig(pusher.ClientConfig{
 			Scheme: "wss",
-			Host: "ws-test1.staging.pusher.com",
-			Port: "443",
-			Key: token.Key,
+			Host:   "ws-test1.staging.pusher.com",
+			Port:   "443",
+			Key:    token.Key,
 			Secret: token.Secret,
 		})
 
@@ -47,7 +50,7 @@ var Subscribe = &cobra.Command{
 		channelColor := color.New(color.FgRed)
 		eventColor := color.New(color.FgBlue)
 
-		client.BindGlobal(func (channelName string, eventName string, data interface{}) {
+		client.BindGlobal(func(channelName string, eventName string, data interface{}) {
 			fmt.Printf("Event: ")
 			channelColor.Printf("channel=%s ", channelName)
 			eventColor.Printf("event=%s ", eventName)
