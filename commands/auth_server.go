@@ -64,7 +64,7 @@ var LocalAuthServer = &cobra.Command{
 		})
 
 		portColor := color.New(color.FgBlue)
-		fmt.Print("Start local server in port")
+		fmt.Print("Started local server. Listening on port ")
 		portColor.Printf("%d", localAuthServerPort)
 		fmt.Print(".\n")
 
