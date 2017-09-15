@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
@@ -18,6 +19,7 @@ var Logout = &cobra.Command{
 			fmt.Println("Removed Pusher account credentials.")
 		} else {
 			fmt.Println("Failed to remove the local configuration.")
+			os.Exit(1)
 		}
 	},
 }

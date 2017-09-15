@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
@@ -18,6 +19,7 @@ var Login = &cobra.Command{
 
 		if config.Get().Email != "" && config.Get().Password != "" {
 			fmt.Printf("Already logged in as '%s'.\n", config.Get().Email)
+			os.Exit(1)
 			return
 		}
 
@@ -32,6 +34,7 @@ var Login = &cobra.Command{
 		_, err := api.GetAllApps()
 		if err != nil {
 			fmt.Println("Invalid credentials.")
+			os.Exit(1)
 		} else {
 			config.Store()
 			fmt.Println("Succesfully logged in.")
