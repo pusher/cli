@@ -22,16 +22,16 @@ func GetApp(appId string) *App {
 	return &App{AppId: appId, Cluster: "mt1", Tokens:[]AppToken{AppToken{"foo", "bar"}}}
 }
 
-var Publish = &cobra.Command{
-	Use:   "publish [app-id] [channel] [event] [message]",
-	Short: "Trigger an event on a Pusher app",
-	Args: cobra.ExactArgs(4),
-	Run: func(cmd *cobra.Command, args []string) {
-		appId := args[0]
-		channelName := args[1]
-		eventName := args[2]
-		message := args[3]
+var appId string
+var channelName string
+var eventName string
+var message string
 
+var Publish = &cobra.Command{
+	Use:   "publish [channel]",
+	Short: "Trigger an event on a Pusher app",
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
 		app := GetApp(appId)
 		token := app.Tokens[0]
 		client := pusher.Client{
@@ -50,3 +50,11 @@ var Publish = &cobra.Command{
 		fmt.Printf("Triggered event: %s %s %s %s\n", appId, channelName, eventName, message)
 	},
 }
+
+func init() {
+	Publish.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
+	Publish.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
+	Publish.PersistentFlags().StringVar(&channelName, "event", "", "Event name")
+	Publish.PersistentFlags().StringVar(&channelName, "message", "", "Message")
+}
+
