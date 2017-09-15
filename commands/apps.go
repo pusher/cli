@@ -1,16 +1,18 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
-
 	"os"
+	"strconv"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
-	"github.com/olekukonko/tablewriter"
-	"strconv"
 )
+
+var appsOutputAsJson bool
 
 var Apps = &cobra.Command{
 	Use:   "apps",
@@ -30,11 +32,20 @@ var Apps = &cobra.Command{
 			return
 		}
 
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"App ID", "App Name", "Cluster"})
-		for _, app := range apps {
-			table.Append([]string{strconv.Itoa(app.Id), app.Name, app.Cluster})
+		if appsOutputAsJson {
+			appsJsonBytes, _ := json.Marshal(apps)
+			fmt.Println(string(appsJsonBytes))
+		} else {
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"App ID", "App Name", "Cluster"})
+			for _, app := range apps {
+				table.Append([]string{strconv.Itoa(app.Id), app.Name, app.Cluster})
+			}
+			table.Render()
 		}
-		table.Render()
 	},
+}
+
+func init() {
+	Apps.PersistentFlags().BoolVar(&appsOutputAsJson, "json", false, "")
 }
