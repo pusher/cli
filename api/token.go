@@ -24,7 +24,7 @@ func generateRandomAppToken() *AppToken {
 	return &appToken
 }
 
-func GetToken(appId string) (*AppToken, error) {
+func GetAllTokensForApp(appId string) ([]AppToken, error) {
 	response, err := pgGetRequest(fmt.Sprintf(getTokensAPIEndpoint, appId))
 	if err != nil {
 		return nil, err
@@ -36,6 +36,14 @@ func GetToken(appId string) (*AppToken, error) {
 		return nil, err
 	}
 
+	return tokens, nil
+}
+
+func GetToken(appId string) (*AppToken, error) {
+	tokens, err := GetAllTokensForApp(appId)
+	if err != nil {
+		return nil, err
+	}
 	return &tokens[0], nil
 }
 

@@ -9,11 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var appId string
-var channelName string
-var eventName string
-var message string
-
 var Trigger = &cobra.Command{
 	Use:   "trigger",
 	Short: "Trigger an event on a Pusher app",

@@ -57,8 +57,6 @@ var Subscribe = &cobra.Command{
 		channelColor := color.New(color.FgRed)
 		eventColor := color.New(color.FgBlue)
 
-		fmt.Printf("Subscribed to channel: %s\n", channelName)  // FIXME should be when we know it's successful
-
 		client.BindGlobal(func(channelName string, eventName string, data interface{}) {
 			fmt.Printf("Event: ")
 			channelColor.Printf("channel=%s ", channelName)

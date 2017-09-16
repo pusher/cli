@@ -10,6 +10,7 @@ func main() {
 	rootCmd.AddCommand(commands.Login)
 	rootCmd.AddCommand(commands.Logout)
 	rootCmd.AddCommand(commands.Apps)
+	rootCmd.AddCommand(commands.Tokens)
 	rootCmd.AddCommand(commands.Trigger)
 	rootCmd.AddCommand(commands.Subscribe)
 	rootCmd.AddCommand(commands.GenerateClient)

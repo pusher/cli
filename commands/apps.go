@@ -12,8 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var appsOutputAsJson bool
-
 var Apps = &cobra.Command{
 	Use:   "apps",
 	Short: "Get the list of all apps",
@@ -32,7 +30,7 @@ var Apps = &cobra.Command{
 			return
 		}
 
-		if appsOutputAsJson {
+		if outputAsJson {
 			appsJsonBytes, _ := json.Marshal(apps)
 			fmt.Println(string(appsJsonBytes))
 		} else {
@@ -47,5 +45,5 @@ var Apps = &cobra.Command{
 }
 
 func init() {
-	Apps.PersistentFlags().BoolVar(&appsOutputAsJson, "json", false, "")
+	Apps.PersistentFlags().BoolVar(&outputAsJson, "json", false, "")
 }
