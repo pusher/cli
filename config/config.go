@@ -17,8 +17,7 @@ const (
 )
 
 type Config struct {
-	Email    string `mapstructure:"email"`
-	Password string `mapstructure:"password"`
+	Token string `mapstructure:"token"`
 }
 
 var conf *Config

@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Logout removes the users API key from the machine.
 var Logout = &cobra.Command{
 	Use:   "logout",
 	Short: "Remove Pusher account credentials from this computer",

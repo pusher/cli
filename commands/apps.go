@@ -12,12 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Apps gets and displays a list of apps.
 var Apps = &cobra.Command{
 	Use:   "apps",
 	Short: "Get the list of all apps",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if config.Get().Email == "" || config.Get().Password == "" {
+		if config.Get().Token == "" {
 			fmt.Println("Not logged in.")
 			os.Exit(1)
 			return
@@ -30,9 +31,9 @@ var Apps = &cobra.Command{
 			return
 		}
 
-		if outputAsJson {
-			appsJsonBytes, _ := json.Marshal(apps)
-			fmt.Println(string(appsJsonBytes))
+		if outputAsJSON {
+			appsJSONBytes, _ := json.Marshal(apps)
+			fmt.Println(string(appsJSONBytes))
 		} else {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"App ID", "App Name", "Cluster"})
@@ -45,5 +46,5 @@ var Apps = &cobra.Command{
 }
 
 func init() {
-	Apps.PersistentFlags().BoolVar(&outputAsJson, "json", false, "")
+	Apps.PersistentFlags().BoolVar(&outputAsJSON, "json", false, "")
 }

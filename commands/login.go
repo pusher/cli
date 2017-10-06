@@ -7,9 +7,8 @@ import (
 	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ssh/terminal"
 )
-
+// Login allows users to log in using an API token.
 var Login = &cobra.Command{
 	Use:   "login",
 	Short: "Enter and store Pusher account credentials",
@@ -17,19 +16,14 @@ var Login = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.Get()
 
-		if config.Get().Email != "" && config.Get().Password != "" {
-			fmt.Printf("Already logged in as '%s'.\n", config.Get().Email)
+		if config.Get().Token != "" {
+			fmt.Printf("Already authenticated.")
 			os.Exit(1)
 			return
 		}
 
-		fmt.Println("What is your email address? ")
-		fmt.Scanln(&conf.Email)
-		fmt.Println("What is your password? ")
-		passwordBytes, _ := terminal.ReadPassword(0)
-
-		conf.Password = string(passwordBytes)
-
+		fmt.Println("What is your Pusher API Key? You can get this by visiting your account settings page (http://localhost:3001/accounts/edit)")
+		fmt.Scanln(&conf.Token)
 		// check if the credentials are valid
 		_, err := api.GetAllApps()
 		if err != nil {
