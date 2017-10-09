@@ -1,4 +1,4 @@
-package commands
+package ddn
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pusher/pusher-cli/api"
+	"github.com/pusher/pusher-cli/commands"
 	"github.com/spf13/cobra"
 )
 
@@ -18,20 +19,20 @@ var Tokens = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			os.Exit(1)
 			return
 		}
 
-		tokens, err := api.GetAllTokensForApp(appID)
+		tokens, err := api.GetAllTokensForApp(commands.AppID)
 		if err != nil {
 			fmt.Printf("Failed to retrieve the list of tokens: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		if outputAsJSON {
+		if commands.OutputAsJSON {
 			tokensJSONBytes, _ := json.Marshal(tokens)
 			fmt.Println(string(tokensJSONBytes))
 		} else {
@@ -46,6 +47,6 @@ var Tokens = &cobra.Command{
 }
 
 func init() {
-	Tokens.PersistentFlags().StringVar(&appID, "app-id", "", "Pusher App ID")
-	Tokens.PersistentFlags().BoolVar(&outputAsJSON, "json", false, "")
+	Tokens.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Tokens.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 }

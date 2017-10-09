@@ -1,4 +1,4 @@
-package commands
+package auth
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
 )
+
 // Login allows users to log in using an API token.
 var Login = &cobra.Command{
 	Use:   "login",
@@ -16,8 +17,8 @@ var Login = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.Get()
 
-		if config.Get().Token != "" {
-			fmt.Printf("Already authenticated.")
+		if APIKeyValid() {
+			fmt.Println("Your API key is valid. If you'd like to use a different API key, use `logout` first.")
 			os.Exit(1)
 			return
 		}

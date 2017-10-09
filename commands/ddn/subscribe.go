@@ -1,4 +1,4 @@
-package commands
+package ddn
 
 import (
 	"fmt"
@@ -8,36 +8,37 @@ import (
 	"github.com/fatih/color"
 	"github.com/pusher-community/pusher-websocket-go"
 	"github.com/pusher/pusher-cli/api"
+	"github.com/pusher/pusher-cli/commands"
 	"github.com/spf13/cobra"
 )
 
 // Subscribe is a function that allows the user to subscribe and listen to events on a particular channel.
 var Subscribe = &cobra.Command{
-	Use:   "subscribe",
+	Use:   "subscribe [OPTIONS]",
 	Short: "Subscribe to a Pusher channel",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			os.Exit(1)
 			return
 		}
 
-		if channelName == "" {
+		if commands.ChannelName == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --channel\n")
 			os.Exit(1)
 			return
 		}
 
-		app, err := api.GetApp(appID)
+		app, err := api.GetApp(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		token, err := api.GetToken(appID)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
 			os.Exit(1)
@@ -53,7 +54,7 @@ var Subscribe = &cobra.Command{
 			Secret: token.Secret,
 		})
 
-		client.Subscribe(channelName)
+		client.Subscribe(commands.ChannelName)
 
 		channelColor := color.New(color.FgRed)
 		eventColor := color.New(color.FgBlue)
@@ -66,7 +67,7 @@ var Subscribe = &cobra.Command{
 		})
 
 		fmt.Printf("Successfully subscribed to channel '")
-		channelColor.Printf(channelName)
+		channelColor.Printf(commands.ChannelName)
 		fmt.Printf("'.\n")
 
 		time.Sleep(time.Hour)
@@ -74,6 +75,6 @@ var Subscribe = &cobra.Command{
 }
 
 func init() {
-	Subscribe.PersistentFlags().StringVar(&appID, "app-id", "", "Pusher App ID")
-	Subscribe.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
+	Subscribe.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Subscribe.PersistentFlags().StringVar(&commands.ChannelName, "channel", "", "Channel name")
 }

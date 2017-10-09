@@ -1,4 +1,4 @@
-package commands
+package ddn
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"os"
 
 	"github.com/pusher/pusher-cli/api"
+	"github.com/pusher/pusher-cli/commands"
 	"github.com/spf13/cobra"
 )
 
 //GenerateServer generates a server app that can trigger events on a particular Pusher app.
 var GenerateServer = &cobra.Command{
-	Use:   "generate-server",
+	Use:   "server",
 	Short: "Generate a Pusher server for your Pusher app",
 	Args:  cobra.NoArgs,
 }
@@ -23,12 +24,12 @@ var GeneratePhp = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			return
 		}
 
-		token, err := api.GetToken(appID)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
 			return
@@ -45,7 +46,7 @@ var GeneratePhp = &cobra.Command{
   $pusher = new Pusher(
     '` + token.Key + `',
     '` + token.Secret + `',
-    '` + appID + `',
+    '` + commands.AppID + `',
     $options
   );
 
@@ -68,12 +69,12 @@ var GeneratePython = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			return
 		}
 
-		token, err := api.GetToken(appID)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
 			return
@@ -83,7 +84,7 @@ var GeneratePython = &cobra.Command{
 			`import pusher
 
 pusher_client = pusher.Pusher(
-  app_id='` + appID + `',
+  app_id='` + commands.AppID + `',
   key='` + token.Key + `',
   secret='` + token.Secret + `',
   host='api-test1.staging.pusher.com',
@@ -101,7 +102,7 @@ pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})`
 }
 
 func init() {
-	GenerateServer.PersistentFlags().StringVar(&appID, "app-id", "", "Pusher App ID")
+	GenerateServer.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
 	GenerateServer.AddCommand(GeneratePhp)
 	GenerateServer.AddCommand(GeneratePython)
 }

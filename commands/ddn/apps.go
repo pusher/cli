@@ -1,4 +1,4 @@
-package commands
+package ddn
 
 import (
 	"encoding/json"
@@ -8,18 +8,19 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pusher/pusher-cli/api"
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/pusher-cli/commands"
+	"github.com/pusher/pusher-cli/commands/auth"
 	"github.com/spf13/cobra"
 )
 
 // Apps gets and displays a list of apps.
 var Apps = &cobra.Command{
-	Use:   "apps",
+	Use:   "list",
 	Short: "Get the list of all apps",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		if config.Get().Token == "" {
-			fmt.Println("Not logged in.")
+		if !auth.APIKeyValid() {
+			fmt.Println("Your API key isn't valid. Add one with the `login` command.")
 			os.Exit(1)
 			return
 		}
@@ -31,8 +32,8 @@ var Apps = &cobra.Command{
 			return
 		}
 
-		if outputAsJSON {
-			appsJSONBytes, _ := json.Marshal(apps)
+		if commands.OutputAsJSON {
+			appsJSONBytes, _ := json.MarshalIndent(apps, "", "	")
 			fmt.Println(string(appsJSONBytes))
 		} else {
 			table := tablewriter.NewWriter(os.Stdout)
@@ -46,5 +47,5 @@ var Apps = &cobra.Command{
 }
 
 func init() {
-	Apps.PersistentFlags().BoolVar(&outputAsJSON, "json", false, "")
+	Apps.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 }

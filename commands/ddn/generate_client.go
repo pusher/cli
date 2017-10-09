@@ -1,4 +1,4 @@
-package commands
+package ddn
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"os"
 
 	"github.com/pusher/pusher-cli/api"
+	"github.com/pusher/pusher-cli/commands"
 	"github.com/spf13/cobra"
 )
 
 //GenerateClient generates a client that can subscribe to channels on an app.
 var GenerateClient = &cobra.Command{
-	Use:   "generate-client",
+	Use:   "client",
 	Short: "Generate a Pusher client for your Pusher app",
 	Args:  cobra.NoArgs,
 }
@@ -23,12 +24,12 @@ var GenerateWeb = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			return
 		}
 
-		token, err := api.GetToken(appID)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
 			return
@@ -56,16 +57,16 @@ var GenerateWeb = &cobra.Command{
     });
   </script>
 </head>`
-		err = ioutil.WriteFile("index.htm", []byte(html), 0644)
+		err = ioutil.WriteFile("index.html", []byte(html), 0644)
 		if err != nil {
 			fmt.Printf("Could not write file: %s\n", err.Error())
 		} else {
-			fmt.Printf("Written file: index.htm\n")
+			fmt.Printf("Written file: index.html\n")
 		}
 	},
 }
 
 func init() {
-	GenerateClient.PersistentFlags().StringVar(&appID, "app-id", "", "Pusher App ID")
+	GenerateClient.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
 	GenerateClient.AddCommand(GenerateWeb)
 }

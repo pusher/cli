@@ -1,20 +1,31 @@
 package main
 
 import (
-	"github.com/pusher/pusher-cli/commands"
+	"github.com/pusher/pusher-cli/commands/auth"
+	"github.com/pusher/pusher-cli/commands/ddn"
 	"github.com/spf13/cobra"
 )
 
 func main() {
 	var rootCmd = &cobra.Command{Use: "pusher"}
-	rootCmd.AddCommand(commands.Login)
-	rootCmd.AddCommand(commands.Logout)
-	rootCmd.AddCommand(commands.Apps)
-	rootCmd.AddCommand(commands.Tokens)
-	rootCmd.AddCommand(commands.Trigger)
-	rootCmd.AddCommand(commands.Subscribe)
-	rootCmd.AddCommand(commands.GenerateClient)
-	rootCmd.AddCommand(commands.GenerateServer)
-	rootCmd.AddCommand(commands.LocalAuthServer)
+
+	var Auth = &cobra.Command{Use: "auth",
+		Short: "Add your API key to access the Pusher Platform"}
+
+	Auth.AddCommand(auth.Login, auth.Logout, auth.Status)
+	var Apps = &cobra.Command{Use: "apps",
+		Short: "Manage your Pusher Apps"}
+	Apps.AddCommand(ddn.Apps, ddn.Tokens, ddn.Subscribe, ddn.Trigger)
+
+	var Generate = &cobra.Command{Use: "generate",
+		Short: "Generate a Pusher client, server, or Authorisation server"}
+	Generate.AddCommand(ddn.GenerateClient, ddn.GenerateServer, ddn.LocalAuthServer)
+
+	var DDN = &cobra.Command{Use: "ddn",
+		Short: "Commands related to our PubSub product."}
+	DDN.AddCommand(Generate, Apps)
+
+	rootCmd.AddCommand(Auth)
+	rootCmd.AddCommand(DDN)
 	rootCmd.Execute()
 }

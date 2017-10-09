@@ -1,10 +1,11 @@
-package commands
+package ddn
 
 import (
 	"fmt"
 	"os"
 
 	"github.com/pusher/pusher-cli/api"
+	"github.com/pusher/pusher-cli/commands"
 	"github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
 )
@@ -16,38 +17,38 @@ var Trigger = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appID == "" {
+		if commands.AppID == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			os.Exit(1)
 			return
 		}
 
-		if channelName == "" {
+		if commands.ChannelName == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --channel\n")
 			os.Exit(1)
 			return
 		}
 
-		if eventName == "" {
+		if commands.EventName == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --event\n")
 			os.Exit(1)
 			return
 		}
 
-		if message == "" {
+		if commands.Message == "" {
 			fmt.Fprintf(os.Stderr, "Please supply --message\n")
 			os.Exit(1)
 			return
 		}
 
-		app, err := api.GetApp(appID)
+		app, err := api.GetApp(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		token, err := api.GetToken(appID)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
 			os.Exit(1)
@@ -55,13 +56,13 @@ var Trigger = &cobra.Command{
 		}
 
 		client := pusher.Client{
-			AppId:   appID,
+			AppId:   commands.AppID,
 			Key:     token.Key,
 			Secret:  token.Secret,
 			Cluster: app.Cluster + ".staging", // app.Cluster,
 		}
 
-		_, err = client.Trigger(channelName, eventName, message)
+		_, err = client.Trigger(commands.ChannelName, commands.EventName, commands.Message)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not trigger: %s\n", err.Error())
 			return
@@ -70,8 +71,8 @@ var Trigger = &cobra.Command{
 }
 
 func init() {
-	Trigger.PersistentFlags().StringVar(&appID, "app-id", "", "Pusher App ID")
-	Trigger.PersistentFlags().StringVar(&channelName, "channel", "", "Channel name")
-	Trigger.PersistentFlags().StringVar(&eventName, "event", "", "Event name")
-	Trigger.PersistentFlags().StringVar(&message, "message", "", "Message")
+	Trigger.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Trigger.PersistentFlags().StringVar(&commands.ChannelName, "channel", "", "Channel name")
+	Trigger.PersistentFlags().StringVar(&commands.EventName, "event", "", "Event name")
+	Trigger.PersistentFlags().StringVar(&commands.Message, "message", "", "Message")
 }
