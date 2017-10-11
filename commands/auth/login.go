@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/crypto/ssh/terminal"
+
 	"github.com/pusher/pusher-cli/api"
 	"github.com/pusher/pusher-cli/config"
 	"github.com/spf13/cobra"
@@ -22,17 +24,29 @@ var Login = &cobra.Command{
 			os.Exit(1)
 			return
 		}
+		var e string
+		fmt.Println("What is your email address? ")
 
-		fmt.Println("What is your Pusher API Key? You can get this by visiting your account settings page (http://localhost:3001/accounts/edit)")
-		fmt.Scanln(&conf.Token)
-		// check if the credentials are valid
-		_, err := api.GetAllApps()
+		fmt.Scanln(&e)
+
+		fmt.Println("What is your password? ")
+		passwordBytes, _ := terminal.ReadPassword(0)
+		p := string(passwordBytes)
+		// check if the user/pass can get an API key
+		apikey, err := api.GetAPIKey(e, p)
 		if err != nil {
-			fmt.Println("Invalid credentials.")
+			fmt.Println("Error getting API key")
 			os.Exit(1)
-		} else {
-			config.Store()
-			fmt.Println("Successfully logged in.")
+			return
 		}
+		if len(apikey) < 1 {
+			fmt.Println("Please first visit your Account settings page, and generate an API key.")
+			os.Exit(1)
+			return
+		}
+		fmt.Println("Got your API key!")
+		conf.Token = apikey
+		config.Store()
+
 	},
 }
