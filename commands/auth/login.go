@@ -50,3 +50,15 @@ var Login = &cobra.Command{
 
 	},
 }
+
+//APIKeyValid returns true if the stored API key is valid.
+func APIKeyValid() bool {
+	conf := config.Get()
+	if conf.Token != "" {
+		_, err := api.GetAllApps()
+		if err == nil {
+			return true
+		}
+	}
+	return false
+}

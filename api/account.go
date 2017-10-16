@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/pusher/pusher-cli/config"
 )
 
 const getAPIKeyEndpoint = "/account/api_key"
@@ -24,9 +26,8 @@ func GetAPIKey(e, p string) (string, error) {
 	var dat apiKeyResponse
 	err = json.Unmarshal(response, &dat)
 	if err != nil {
-		panic(err) //fuck
+		panic(err)
 	}
-
 	return dat.ApiKey, nil
 }
 
@@ -51,4 +52,16 @@ func basicAuthRequest(path string, e string, p string) ([]byte, error) {
 		return nil, err
 	}
 	return respBody, nil
+}
+
+//APIKeyValid returns true if the stored API key is valid.
+func APIKeyValid() bool {
+	conf := config.Get()
+	if conf.Token != "" {
+		_, err := GetAllApps()
+		if err == nil {
+			return true
+		}
+	}
+	return false
 }
