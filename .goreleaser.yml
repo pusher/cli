@@ -1,7 +1,7 @@
 # .goreleaser.yml
 brew:
   github:
-    owner: kn100
+    owner: pusher
     name: homebrew-tap
   commit_author:
     owner: kn100
