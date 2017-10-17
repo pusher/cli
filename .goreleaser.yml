@@ -1,0 +1,10 @@
+# .goreleaser.yml
+brew:
+  github:
+    owner: kn100
+    name: homebrew-tap
+  commit_author:
+    owner: kn100
+    email: kevin.norman@pusher.com
+  homepage: "https://pusher.com/"
+  description: "Pusher CLI!"
