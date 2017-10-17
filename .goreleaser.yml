@@ -8,3 +8,11 @@ brew:
     email: kevin.norman@pusher.com
   homepage: "https://pusher.com/"
   description: "Pusher CLI!"
+fpm: 
+  vendor: Pusher
+  homepage: "https://pusher.com/"
+  maintainer: Kevin <kevin.norman@pusher.com>
+  description: Pusher CLI provides access to Pusher Platform functionality via a CLI!
+  formats:
+    - deb
+    - rpm
