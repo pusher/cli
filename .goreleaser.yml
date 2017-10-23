@@ -1,18 +1,29 @@
 # .goreleaser.yml
-brew:
-  github:
-    owner: pusher
-    name: homebrew-tap
-  commit_author:
-    owner: kn100
+brew: 
+  commit_author: 
     email: kevin.norman@pusher.com
-  homepage: "https://pusher.com/"
+    owner: kn100
   description: "Pusher CLI!"
-fpm: 
-  vendor: Pusher
+  github: 
+    name: homebrew-tap
+    owner: pusher
   homepage: "https://pusher.com/"
-  maintainer: Kevin <kevin.norman@pusher.com>
-  description: Pusher CLI provides access to Pusher Platform functionality via a CLI!
-  formats:
+build: 
+  binary: pusher
+  goos: 
+    - windows
+    - darwin
+    - linux
+    - freebsd
+  goarch:
+    - amd64
+fpm: 
+  description: "Pusher CLI provides access to Pusher Platform functionality via a CLI!"
+  formats: 
     - deb
     - rpm
+  homepage: "https://pusher.com/"
+  maintainer: "Kevin <kevin.norman@pusher.com>"
+  vendor: Pusher
+project_name: pusher
+

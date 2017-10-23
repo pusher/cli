@@ -43,7 +43,7 @@ var LocalAuthServer = &cobra.Command{
 
 		token, err := api.GetToken(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
@@ -60,7 +60,8 @@ var LocalAuthServer = &cobra.Command{
 			response, err := pClient.AuthenticatePrivateChannel(params)
 
 			if err != nil {
-				panic(err)
+				fmt.Println("Invalid request", err)
+				return
 			}
 
 			resp.Header().Set("Access-Control-Allow-Origin", "*")

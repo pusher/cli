@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,23 +13,23 @@ import (
 const getAPIKeyEndpoint = "/account/api_key"
 
 type apiKeyResponse struct {
-	ApiKey string `json:"apikey"`
+	APIKey string `json:"apikey"`
 }
 
 func GetAPIKey(e, p string) (string, error) {
 	response, err := basicAuthRequest(getAPIKeyEndpoint, e, p)
-
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
+		fmt.Println("The Pusher API didn't respond correctly. Please try again later!")
+		return "", err
 	}
 
 	var dat apiKeyResponse
 	err = json.Unmarshal(response, &dat)
-	if err != nil {
-		panic(err)
+	if dat.APIKey == "" || err != nil {
+		return "", errors.New("Error parsing JSON")
 	}
-	return dat.ApiKey, nil
+
+	return dat.APIKey, nil
 }
 
 func basicAuthRequest(path string, e string, p string) ([]byte, error) {

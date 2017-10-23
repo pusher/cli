@@ -31,7 +31,7 @@ var GenerateWeb = &cobra.Command{
 
 		token, err := api.GetToken(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			return
 		}
 

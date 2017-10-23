@@ -39,9 +39,8 @@ var Login = &cobra.Command{
 			os.Exit(1)
 			return
 		}
-		if len(apikey) < 1 {
-			fmt.Println("Please first visit your Account settings page, and generate an API key.")
-			os.Exit(1)
+		if apikey == "" {
+			fmt.Println("There is No API key associated with those account details. Make sure you've set up your API key in the Admin Dashboard, and that are your details are correct.")
 			return
 		}
 		fmt.Println("Got your API key!")
