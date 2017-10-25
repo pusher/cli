@@ -1,4 +1,4 @@
-package ddn
+package channels
 
 import (
 	"fmt"
