@@ -34,7 +34,7 @@ You can install this package via Homebrew by pasting the following into a termin
 brew install pusher/brew/pusher-cli
 ```
 
-## Hack
+## Hacking
 
 1. Clone this repository;
 1. Run `govendor sync` - This will modify vendor.json. Don't commit this file;
