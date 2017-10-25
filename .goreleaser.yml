@@ -25,4 +25,4 @@ fpm:
   homepage: "https://pusher.com/"
   maintainer: "Kevin <kevin.norman@pusher.com>"
   vendor: Pusher
-project_name: cli
+project_name: pusher
