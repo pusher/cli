@@ -5,7 +5,7 @@ brew:
     owner: kn100
   description: "Pusher CLI!"
   github: 
-    name: homebrew-tap
+    name: homebrew-brew
     owner: pusher
   homepage: "https://pusher.com/"
 build: 
@@ -18,12 +18,11 @@ build:
   goarch:
     - amd64
 fpm: 
-  description: "Pusher CLI provides access to Pusher Platform functionality via a CLI!"
+  description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
   formats: 
     - deb
     - rpm
   homepage: "https://pusher.com/"
   maintainer: "Kevin <kevin.norman@pusher.com>"
   vendor: Pusher
-project_name: pusher
-
+project_name: cli
