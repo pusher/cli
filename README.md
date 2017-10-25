@@ -24,7 +24,7 @@ There's multiple ways you can get the Pusher CLI onto your machine:
 
 ### Downloading the binary blob
 
-You can download the binary blob from [here](https://github.com/pusher/pusher-cli/releases) and add it to your path.
+You can download the latest release from [here](https://github.com/pusher/pusher-cli/releases) and add it to your path.
 
 ### Homebrew
 
