@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/config"
 )
 
 const (

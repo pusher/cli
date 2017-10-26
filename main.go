@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pusher/pusher-cli/commands/auth"
-	"github.com/pusher/pusher-cli/commands/channels"
+	"github.com/pusher/cli/commands/auth"
+	"github.com/pusher/cli/commands/channels"
 	"github.com/spf13/cobra"
 )
 

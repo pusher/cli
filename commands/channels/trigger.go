@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pusher/pusher-cli/api"
-	"github.com/pusher/pusher-cli/commands"
+	"github.com/pusher/cli/api"
+	"github.com/pusher/cli/commands"
 	"github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
 )

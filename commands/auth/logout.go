@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/config"
 	"github.com/spf13/cobra"
 )
 

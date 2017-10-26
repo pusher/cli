@@ -7,10 +7,10 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/pusher/pusher-cli/api"
-	"github.com/pusher/pusher-cli/commands"
-	"github.com/pusher/pusher-cli/commands/auth"
-	"github.com/pusher/pusher-http-go"
+	"github.com/pusher/cli/api"
+	"github.com/pusher/cli/commands"
+	"github.com/pusher/cli/commands/auth"
+	pusher "github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	"github.com/pusher/pusher-cli/api"
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/api"
+	"github.com/pusher/cli/config"
 	"github.com/spf13/cobra"
 )
 

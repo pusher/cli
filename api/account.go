@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/config"
 )
 
 const getAPIKeyEndpoint = "/account/api_key"
