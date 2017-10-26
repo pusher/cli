@@ -22,7 +22,14 @@ Available Commands:
 
 There's multiple ways you can get the Pusher CLI onto your machine:
 
-### Downloading the binary blob
+### Building from Source
+
+1. Clone this repository;
+1. Pull dependencies with `govendor sync`;
+1. Build with `go build -o pusher`;
+1. Copy `pusher` to your `$GOPATH/bin` or just use it as is.
+
+### Downloading the Binary
 
 You can download the latest release from [here](https://github.com/pusher/pusher-cli/releases) and add it to your path.
 
@@ -37,4 +44,4 @@ brew install pusher/brew/pusher-cli
 ## Hacking
 
 1. Clone this repository;
-1. Run `govendor sync` - This will modify vendor.json. Don't commit this file;
+1. Pull dependencies with `govendor sync` - This will modify vendor.json. Don't commit this file;
