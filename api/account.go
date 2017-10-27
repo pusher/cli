@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/pusher/cli/config"
 )
@@ -19,6 +20,7 @@ type apiKeyResponse struct {
 func GetAPIKey(e, p string) (string, error) {
 	response, err := basicAuthRequest(getAPIKeyEndpoint, e, p)
 	if err != nil {
+		fmt.Println(err)
 		fmt.Println("The Pusher API didn't respond correctly. Please try again later!")
 		return "", err
 	}
@@ -32,14 +34,15 @@ func GetAPIKey(e, p string) (string, error) {
 	return dat.APIKey, nil
 }
 
-func basicAuthRequest(path string, e string, p string) ([]byte, error) {
+func basicAuthRequest(path string, username string, password string) ([]byte, error) {
 	req, err := http.NewRequest("GET", baseEndpoint+path, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Content-type", "application/json")
-	req.SetBasicAuth(e, p)
+	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
+	req.SetBasicAuth(username, password)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -55,8 +58,8 @@ func basicAuthRequest(path string, e string, p string) ([]byte, error) {
 	return respBody, nil
 }
 
-//APIKeyValid returns true if the stored API key is valid.
-func APIKeyValid() bool {
+//isAPIKeyValid returns true if the stored API key is valid.
+func isAPIKeyValid() bool {
 	conf := config.Get()
 	if conf.Token != "" {
 		_, err := GetAllApps()
@@ -65,4 +68,11 @@ func APIKeyValid() bool {
 		}
 	}
 	return false
+}
+
+func validateKeyOrDie() {
+	if !isAPIKeyValid() {
+		fmt.Println("Your API key isn't valid. Add one with the `login` command.")
+		os.Exit(1)
+	}
 }

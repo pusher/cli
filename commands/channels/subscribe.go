@@ -3,7 +3,6 @@ package channels
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/pusher-community/pusher-websocket-go"
@@ -70,7 +69,6 @@ var Subscribe = &cobra.Command{
 		channelColor.Printf(commands.ChannelName)
 		fmt.Printf("'.\n")
 
-		time.Sleep(time.Hour)
 	},
 }
 

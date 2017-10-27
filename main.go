@@ -37,8 +37,13 @@ func main() {
 
 	var Generate = &cobra.Command{Use: "generate",
 		Short: "Generate a Pusher client, server, or Authorisation server"}
+
+	var Channels = &cobra.Command{Use: "channels",
+		Short: "Commands related to Pusher Channels"}
+
 	Generate.AddCommand(channels.GenerateClient, channels.GenerateServer, channels.LocalAuthServer)
-	rootCmd.AddCommand(Generate, Apps)
+	Channels.AddCommand(Generate, Apps)
+	rootCmd.AddCommand(Channels)
 	rootCmd.AddCommand(auth.Login, auth.Logout)
 	rootCmd.AddCommand(cli.Version)
 	rootCmd.Execute()
