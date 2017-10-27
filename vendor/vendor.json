@@ -203,12 +203,6 @@
 			"revisionTime": "2016-10-12T09:40:13Z"
 		},
 		{
-			"checksumSHA1": "LMu1NsthSqcXfKu0m6YGPAmwBcY=",
-			"path": "github.com/urfave/cli",
-			"revision": "0bdeddeeb0f650497d603c4ad7b20cfe685682f6",
-			"revisionTime": "2016-11-22T04:36:10Z"
-		},
-		{
 			"checksumSHA1": "dwOedwBJ1EIK9+S3t108Bx054Y8=",
 			"path": "golang.org/x/crypto/curve25519",
 			"revision": "ede567c8e044a5913dad1d1af3696d9da953104c",
@@ -239,7 +233,7 @@
 			"revisionTime": "2016-11-04T19:41:44Z"
 		},
 		{
-			"checksumSHA1": "Xz3hUrPvOYGWTuHrEryoYAj9zwg=",
+			"checksumSHA1": "LtxdUN2nIXqOhuHdLD3RTB7snnk=",
 			"path": "golang.org/x/sys/unix",
 			"revision": "9bb9f0998d48b31547d975974935ae9b48c7a03c",
 			"revisionTime": "2016-10-11T23:07:22Z"
@@ -251,7 +245,7 @@
 			"revisionTime": "2016-10-06T11:26:12Z"
 		},
 		{
-			"checksumSHA1": "Aj3JSVO324FCjEAGm4ZwmC79bbo=",
+			"checksumSHA1": "aihk1EHGiDFDRDZuRf5CWqWpcYs=",
 			"path": "golang.org/x/text/unicode/norm",
 			"revision": "afa951a3250e0e2195be7366207189f3184d3fe1",
 			"revisionTime": "2016-10-06T11:26:12Z"

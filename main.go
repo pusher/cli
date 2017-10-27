@@ -7,8 +7,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const pusherLogo = `
+            ▄▓▓▓▓▓▓▓▄.        
+      .▄█,▓▓▓▓▓▓▀  ▄#▓█▓▓╥    
+    ╓▓▓ ▄▓▓▓▓▓▀ ,▓▓▓▓▓▓▓▓▓▓▓▄ 
+   ▐▓▓ ;▓▓▓▓▓▌ ▓▓▓▓▓▓▀▄▄ ▀▓▓▓▓
+   ▓▓▌ ▓▓▓▓▓▓ ▓▓▓▓▓▓  ▓▌  ▀▓▓▓
+  ╟▓▓▌ ▓▓▓▓▓▌ ▓▓▓▓▓  ▓▓   ▐▓▓▌
+  ▓▓▓▌ ▓▓▓▓▓▌ ▓▓▓▓▓ ▀   .▓▓▀ 
+  ▓▓▓▌ ▓▓▓▓▓▌ ▓▓▓▓▌    .▓▓▓^  
+  ▐▓▓▌ ▓▓▓▓▓▓ ▓▓▓▓▌ ,▓▓▓▀     
+   ▓▓▓ ▓▓▓▓▓▓ ▓▓▓▓▓ ▀        
+   ▓▓▓ ╟▓▓▓▓▓▌╙▓▓▓▓           
+   ▐▓▓▓ ▓▓▓▓▓▓ ▓▓▓▓▓  ,,▄     
+    ▓▓▓ ▀▓▓▓▓▓▄▀▓▓▓▓▓▓▓▓      
+     ▓▓▓ ▓▓▓▓▓▓ ▀▀▀▀ ▓▓       
+ⁿ█▓▓▓▓▓█═▐▓▓▓▓▓▓▓▓▓▀▐▓        
+   ▀▓▄ █▓▓▓▓▓▓▓▓▓▓▀┌▓        
+     ▀▓⌐▀▓▓▓▓▓▓▓▀ █▀         
+            ▀▓▓▓▀             
+               ▀        
+`
+
 func main() {
-	var rootCmd = &cobra.Command{Use: "pusher"}
+	var rootCmd = &cobra.Command{Use: "pusher", Short: pusherLogo}
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Pusher Apps"}
 	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger)
