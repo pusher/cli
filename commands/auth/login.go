@@ -22,16 +22,16 @@ var Login = &cobra.Command{
 		if APIKeyValid() {
 			fmt.Println("Your API key is valid. If you'd like to use a different API key, use `logout` first.")
 			os.Exit(1)
-			return
 		}
 		var e string
-		fmt.Println("What is your email address? ")
+		fmt.Println("What is your email address?")
 
 		fmt.Scanln(&e)
 
-		fmt.Println("What is your password? ")
+		fmt.Println("What is your password?")
 		passwordBytes, _ := terminal.ReadPassword(0)
 		p := string(passwordBytes)
+
 		// check if the user/pass can get an API key
 		apikey, err := api.GetAPIKey(e, p)
 		if err != nil {

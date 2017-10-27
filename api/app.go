@@ -15,7 +15,7 @@ type App struct {
 const getAppsAPIEndpoint = "/apps.json"
 
 func GetAllApps() ([]App, error) {
-	response, err := pgGetRequest(getAppsAPIEndpoint)
+	response, err := makeRequest("GET", getAppsAPIEndpoint, nil)
 	if err != nil {
 		return nil, err
 	}

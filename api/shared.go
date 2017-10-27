@@ -19,36 +19,11 @@ var (
 	rnd        = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
-func pgPostRequest(path string, body []byte) (string, error) {
-	req, err := http.NewRequest("POST", baseEndpoint+path, bytes.NewBuffer(body))
+func makeRequest(reqtype string, path string, body []byte) (string, error) {
+	req, err := http.NewRequest(reqtype, baseEndpoint+path, bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
-
-	req.Header.Set("Content-type", "application/json")
-	req.Header.Set("Authorization", "Token token="+config.Get().Token)
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(respBody), nil
-}
-
-func pgGetRequest(path string) (string, error) {
-	req, err := http.NewRequest("GET", baseEndpoint+path, nil)
-	if err != nil {
-		return "", err
-	}
-
 	req.Header.Set("Content-type", "application/json")
 	req.Header.Set("Authorization", "Token token="+config.Get().Token)
 	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
