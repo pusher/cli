@@ -4,17 +4,18 @@ This is a tool that allows developers access to their Pusher accounts via a comm
 
 ## Usage
 
-Before attempting to use the Pusher CLI, You should log into your [dashboard](https://dashboard.pusher.com/accounts/edit) and generate a new API key. Next, follow the setup instructions below, and then run `pusher login`.
+Before attempting to use the Pusher CLI, You should log into your [dashboard](https://dashboard.pusher.com/accounts/edit) and generate a new API key. Next, follow the installation instructions [below](#installing), and then run `pusher login`.
 
 ```
-pusher [command]
+Usage:
+  pusher [command]
 
 Available Commands:
-  apps        Manage your Pusher Apps
-  generate    Generate a Pusher client, server, or Authorization server
+  channels    Commands related to the Channels product
   help        Help about any command
   login       Enter and store Pusher account credentials
   logout      Remove Pusher account credentials from this computer
+  version     Lists the version of Pusher CLI
 ```
 
 ## Installing

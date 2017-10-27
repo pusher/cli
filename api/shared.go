@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	baseEndpoint = "http://localhost:3000"
+	baseEndpoint = "http://192.168.7.212:3000"
 )
 
 var (

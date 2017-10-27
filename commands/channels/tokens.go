@@ -15,7 +15,7 @@ import (
 // Tokens lists the App Key and Secret for a particular app.
 var Tokens = &cobra.Command{
 	Use:   "tokens",
-	Short: "List tokens for a Pusher app",
+	Short: "List tokens for a Channels app",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -47,6 +47,6 @@ var Tokens = &cobra.Command{
 }
 
 func init() {
-	Tokens.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Tokens.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Channels App ID")
 	Tokens.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 }

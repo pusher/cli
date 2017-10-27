@@ -13,7 +13,7 @@ import (
 // Trigger allows the user to trigger an event on a particular channel.
 var Trigger = &cobra.Command{
 	Use:   "trigger",
-	Short: "Trigger an event on a Pusher app",
+	Short: "Trigger an event on a Channels app",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -71,7 +71,7 @@ var Trigger = &cobra.Command{
 }
 
 func init() {
-	Trigger.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Trigger.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Channels App ID")
 	Trigger.PersistentFlags().StringVar(&commands.ChannelName, "channel", "", "Channel name")
 	Trigger.PersistentFlags().StringVar(&commands.EventName, "event", "", "Event name")
 	Trigger.PersistentFlags().StringVar(&commands.Message, "message", "", "Message")

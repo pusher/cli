@@ -14,7 +14,7 @@ import (
 // Subscribe is a function that allows the user to subscribe and listen to events on a particular channel.
 var Subscribe = &cobra.Command{
 	Use:   "subscribe [OPTIONS]",
-	Short: "Subscribe to a Pusher channel",
+	Short: "Subscribe to a channel",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -73,6 +73,6 @@ var Subscribe = &cobra.Command{
 }
 
 func init() {
-	Subscribe.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
+	Subscribe.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Channels App ID")
 	Subscribe.PersistentFlags().StringVar(&commands.ChannelName, "channel", "", "Channel name")
 }
