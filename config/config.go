@@ -21,6 +21,12 @@ type Config struct {
 }
 
 var conf *Config
+var version = "master"
+
+// GetVersion returns version of PusherCLI, set in ldflags.
+func GetVersion() string {
+	return version
+}
 
 func getUserHomeDir() string {
 	usr, err := user.Current()

@@ -51,7 +51,7 @@ func pgGetRequest(path string) (string, error) {
 
 	req.Header.Set("Content-type", "application/json")
 	req.Header.Set("Authorization", "Token token="+config.Get().Token)
-
+	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", err

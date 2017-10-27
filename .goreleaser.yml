@@ -17,6 +17,7 @@ build:
     - freebsd
   goarch:
     - amd64
+  ldflags: -s -w -X github.com/pusher/cli/config.version={{.Version}}
 fpm: 
   description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
   formats: 
@@ -26,3 +27,5 @@ fpm:
   maintainer: "Kevin <kevin.norman@pusher.com>"
   vendor: Pusher
 project_name: pusher
+archive:
+  format: zip
