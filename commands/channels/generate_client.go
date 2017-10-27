@@ -1,38 +1,42 @@
-package commands
+package channels
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
-	"github.com/pusher/pusher-cli/api"
+
+	"github.com/pusher/cli/api"
+	"github.com/pusher/cli/commands"
+	"github.com/spf13/cobra"
 )
 
+//GenerateClient generates a client that can subscribe to channels on an app.
 var GenerateClient = &cobra.Command{
-	Use:   "generate-client",
+	Use:   "client",
 	Short: "Generate a Pusher client for your Pusher app",
 	Args:  cobra.NoArgs,
 }
 
+//GenerateWeb generates a web client that can subscribe to channels on an app.
 var GenerateWeb = &cobra.Command{
 	Use:   "web",
 	Short: "Generate a web client for your Pusher app",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if appId == "" {
-			fmt.Fprintf(os.Stderr,"Please supply --app-id\n")
+		if commands.AppID == "" {
+			fmt.Fprintf(os.Stderr, "Please supply --app-id\n")
 			return
 		}
 
-		token, err := api.GetToken(appId)
+		token, err := api.GetToken(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get token: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			return
 		}
 
 		html :=
-`<!DOCTYPE html>
+			`<!DOCTYPE html>
 <head>
   <title>Pusher Test</title>
   <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
@@ -41,7 +45,7 @@ var GenerateWeb = &cobra.Command{
     // Enable pusher logging - don't include this in production
     Pusher.logToConsole = true;
 
-    var pusher = new Pusher('`+token.Key+`', {
+    var pusher = new Pusher('` + token.Key + `', {
       wsHost: 'ws-test1.staging.pusher.com',
       httpHost: 'sockjs-test1.staging.pusher.com',
       encrypted: true
@@ -53,16 +57,16 @@ var GenerateWeb = &cobra.Command{
     });
   </script>
 </head>`
-		err = ioutil.WriteFile("index.htm", []byte(html), 0644)
+		err = ioutil.WriteFile("index.html", []byte(html), 0644)
 		if err != nil {
 			fmt.Printf("Could not write file: %s\n", err.Error())
 		} else {
-			fmt.Printf("Written file: index.htm\n")
+			fmt.Printf("Written file: index.html\n")
 		}
 	},
 }
 
 func init() {
-	GenerateClient.PersistentFlags().StringVar(&appId, "app-id", "", "Pusher App ID")
+	GenerateClient.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Pusher App ID")
 	GenerateClient.AddCommand(GenerateWeb)
 }

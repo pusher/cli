@@ -1,8 +1,8 @@
-// Exposes all the needed configs for statsd-sink
 package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -11,22 +11,28 @@ import (
 )
 
 const (
-	baseDirectory           = "/.pusher"
+	baseDirectory           = "/.config/pusher-cli"
 	defaultDirPermission    = 0755
 	defaultConfigPermission = 0600
 )
 
 type Config struct {
-	Email    string `mapstructure:"email"`
-	Password string `mapstructure:"password"`
+	Token string `mapstructure:"token"`
 }
 
 var conf *Config
+var version = "master"
+
+// GetVersion returns version of PusherCLI, set in ldflags.
+func GetVersion() string {
+	return version
+}
 
 func getUserHomeDir() string {
 	usr, err := user.Current()
 	if err != nil {
-		return "~" // best effort
+		fmt.Println("Can't get your home directory.")
+		os.Exit(1)
 	}
 
 	return usr.HomeDir
@@ -34,7 +40,7 @@ func getUserHomeDir() string {
 
 func readConfig() *Config {
 	if _, err := os.Stat(baseDirectory); os.IsNotExist(err) {
-		os.Mkdir(baseDirectory, defaultDirPermission)
+		os.MkdirAll(baseDirectory, defaultDirPermission)
 	}
 
 	viper.AddConfigPath(getUserHomeDir() + baseDirectory)
@@ -44,12 +50,10 @@ func readConfig() *Config {
 
 	c := &Config{}
 	if err := viper.ReadInConfig(); err != nil {
-		//logrus.WithError(err).Warnln("Failed to read config.")
 		return c
 	}
 
 	if err := viper.Unmarshal(&c); err != nil {
-		//logrus.WithError(err).Warnln("Failed to unmarshal config.")
 		return c
 	}
 
@@ -66,7 +70,7 @@ func Get() *Config {
 
 func Store() error {
 	if _, err := os.Stat(getUserHomeDir() + baseDirectory); os.IsNotExist(err) {
-		os.Mkdir(getUserHomeDir()+baseDirectory, defaultDirPermission)
+		os.MkdirAll(getUserHomeDir()+baseDirectory, defaultDirPermission)
 	}
 
 	confJson, err := json.Marshal(conf)

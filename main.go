@@ -1,20 +1,23 @@
 package main
 
 import (
-	"github.com/pusher/pusher-cli/commands"
+	"github.com/pusher/cli/commands/auth"
+	"github.com/pusher/cli/commands/channels"
+	"github.com/pusher/cli/commands/cli"
 	"github.com/spf13/cobra"
 )
 
 func main() {
 	var rootCmd = &cobra.Command{Use: "pusher"}
-	rootCmd.AddCommand(commands.Login)
-	rootCmd.AddCommand(commands.Logout)
-	rootCmd.AddCommand(commands.Apps)
-	rootCmd.AddCommand(commands.Tokens)
-	rootCmd.AddCommand(commands.Trigger)
-	rootCmd.AddCommand(commands.Subscribe)
-	rootCmd.AddCommand(commands.GenerateClient)
-	rootCmd.AddCommand(commands.GenerateServer)
-	rootCmd.AddCommand(commands.LocalAuthServer)
+	var Apps = &cobra.Command{Use: "apps",
+		Short: "Manage your Pusher Apps"}
+	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger)
+
+	var Generate = &cobra.Command{Use: "generate",
+		Short: "Generate a Pusher client, server, or Authorisation server"}
+	Generate.AddCommand(channels.GenerateClient, channels.GenerateServer, channels.LocalAuthServer)
+	rootCmd.AddCommand(Generate, Apps)
+	rootCmd.AddCommand(auth.Login, auth.Logout)
+	rootCmd.AddCommand(cli.Version)
 	rootCmd.Execute()
 }

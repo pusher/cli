@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/config"
 )
 
 const (
-	baseEndpoint = "https://app.staging.pusher.com"
+	baseEndpoint = "http://localhost:3000"
 )
 
 var (
@@ -26,7 +26,7 @@ func pgPostRequest(path string, body []byte) (string, error) {
 	}
 
 	req.Header.Set("Content-type", "application/json")
-	req.SetBasicAuth(config.Get().Email, config.Get().Password)
+	req.Header.Set("Authorization", "Token token="+config.Get().Token)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -50,8 +50,8 @@ func pgGetRequest(path string) (string, error) {
 	}
 
 	req.Header.Set("Content-type", "application/json")
-	req.SetBasicAuth(config.Get().Email, config.Get().Password)
-
+	req.Header.Set("Authorization", "Token token="+config.Get().Token)
+	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", err

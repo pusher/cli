@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -29,11 +30,16 @@ func GetAllTokensForApp(appId string) ([]AppToken, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	tokens := []AppToken{}
 	err = json.Unmarshal([]byte(response), &tokens)
 	if err != nil {
+		if APIKeyValid() {
+			return nil, errors.New("the server did not respond correctly")
+		} else {
+			return nil, errors.New("your token appears not to be valid")
+		}
 		return nil, err
+
 	}
 
 	return tokens, nil

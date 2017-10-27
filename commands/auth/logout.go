@@ -1,13 +1,14 @@
-package commands
+package auth
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/pusher/pusher-cli/config"
+	"github.com/pusher/cli/config"
 	"github.com/spf13/cobra"
 )
 
+// Logout removes the users API key from the machine.
 var Logout = &cobra.Command{
 	Use:   "logout",
 	Short: "Remove Pusher account credentials from this computer",
