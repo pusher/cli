@@ -4,8 +4,7 @@ This is a tool that allows developers access to their Pusher accounts via a comm
 
 ## Usage
 
-Before attempting to use the Pusher CLI, You should log into your [dashboard](https://dashboard.pusher.com/accounts/edit) 
-and generate a new API key. Next, follow the setup instructions below, and then run `pusher login`.
+Before attempting to use the Pusher CLI, You should log into your [dashboard](https://dashboard.pusher.com/accounts/edit) and generate a new API key. Next, follow the setup instructions below, and then run `pusher login`.
 
 ```
 pusher [command]
@@ -29,7 +28,7 @@ You can download the latest release from [here](https://github.com/pusher/cli/re
 ### Building from Source
 
 1. Clone this repository;
-1. Pull dependencies with `govendor sync`;
+1. Pull dependencies with `dep ensure`;
 1. Build with `go build -o pusher`;
 1. Copy `pusher` to your `$GOPATH/bin` or just use it as is.
 
@@ -41,6 +40,9 @@ You can install this package via Homebrew by pasting the following into a termin
 brew install pusher/brew/pusher
 ```
 
-## Hacking
+## Hacking On It
 
 1. Clone this repository;
+1. Create a new branch by running `git checkout -b <YOUR_BRANCH_NAME_HERE> master`
+1. Pull dependencies with `dep ensure`;
+1. Ready to hack.
