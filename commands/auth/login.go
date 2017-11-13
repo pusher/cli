@@ -7,7 +7,6 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/pusher/cli/api"
-	"github.com/pusher/cli/config"
 	"github.com/spf13/cobra"
 	"github.com/theherk/viper"
 )
@@ -18,7 +17,6 @@ var Login = &cobra.Command{
 	Short: "Enter and store Pusher account credentials",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		config.Init()
 		if APIKeyValid() {
 			fmt.Println("Your API key is valid. If you'd like to use a different API key, use `logout` first.")
 			os.Exit(1)
