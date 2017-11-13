@@ -35,7 +35,7 @@ func GetAPIKey(e, p string) (string, error) {
 }
 
 func basicAuthRequest(path string, username string, password string) ([]byte, error) {
-	req, err := http.NewRequest("GET", baseEndpoint+path, nil)
+	req, err := http.NewRequest("GET", baseEndpoint()+path, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -10,17 +10,21 @@ import (
 	"github.com/pusher/cli/config"
 )
 
-const (
-	baseEndpoint = "http://192.168.7.212:3000"
-)
-
 var (
 	httpClient = &http.Client{Timeout: 5 * time.Second}
 	rnd        = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
+func baseEndpoint() string {
+	endpoint := config.Get().BaseEndpoint
+	if endpoint == "" {
+		return "https://cli.pusher.com"
+	}
+	return endpoint
+}
+
 func makeRequest(reqtype string, path string, body []byte) (string, error) {
-	req, err := http.NewRequest(reqtype, baseEndpoint+path, bytes.NewBuffer(body))
+	req, err := http.NewRequest(reqtype, baseEndpoint()+path, bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
