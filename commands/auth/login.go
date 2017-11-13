@@ -7,8 +7,8 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/pusher/cli/api"
-	"github.com/pusher/cli/config"
 	"github.com/spf13/cobra"
+	"github.com/theherk/viper"
 )
 
 // Login allows users to log in using an API token.
@@ -17,23 +17,20 @@ var Login = &cobra.Command{
 	Short: "Enter and store Pusher account credentials",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf := config.Get()
-
 		if APIKeyValid() {
 			fmt.Println("Your API key is valid. If you'd like to use a different API key, use `logout` first.")
 			os.Exit(1)
 		}
-		var e string
 		fmt.Println("What is your email address?")
-
-		fmt.Scanln(&e)
+		var email string
+		fmt.Scanln(&email)
 
 		fmt.Println("What is your password?")
 		passwordBytes, _ := terminal.ReadPassword(0)
-		p := string(passwordBytes)
+		password := string(passwordBytes)
 
 		// check if the user/pass can get an API key
-		apikey, err := api.GetAPIKey(e, p)
+		apikey, err := api.GetAPIKey(email, password)
 		if err != nil {
 			fmt.Println("Error getting API key")
 			os.Exit(1)
@@ -44,16 +41,18 @@ var Login = &cobra.Command{
 			return
 		}
 		fmt.Println("Got your API key!")
-		conf.Token = apikey
-		config.Store()
-
+		viper.Set("token", apikey)
+		fmt.Println(apikey)
+		err = viper.WriteConfig()
+		if err != nil {
+			fmt.Println(err)
+		}
 	},
 }
 
 //APIKeyValid returns true if the stored API key is valid.
 func APIKeyValid() bool {
-	conf := config.Get()
-	if conf.Token != "" {
+	if viper.GetString("token") != "" {
 		_, err := api.GetAllApps()
 		if err == nil {
 			return true

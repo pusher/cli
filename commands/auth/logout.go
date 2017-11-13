@@ -19,7 +19,7 @@ var Logout = &cobra.Command{
 		if deleteErr == nil {
 			fmt.Println("Removed Pusher account credentials.")
 		} else {
-			fmt.Println("Failed to remove the local configuration.")
+			fmt.Println("Failed to remove the local configuration. Is it there?")
 			os.Exit(1)
 		}
 	},

@@ -8,10 +8,7 @@ import (
 	"time"
 
 	"github.com/pusher/cli/config"
-)
-
-const (
-	baseEndpoint = "http://192.168.7.212:3000"
+	"github.com/theherk/viper"
 )
 
 var (
@@ -20,12 +17,12 @@ var (
 )
 
 func makeRequest(reqtype string, path string, body []byte) (string, error) {
-	req, err := http.NewRequest(reqtype, baseEndpoint+path, bytes.NewBuffer(body))
+	req, err := http.NewRequest(reqtype, viper.GetString("endpoint")+path, bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
 	req.Header.Set("Content-type", "application/json")
-	req.Header.Set("Authorization", "Token token="+config.Get().Token)
+	req.Header.Set("Authorization", "Token token="+viper.GetString("token"))
 	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
 	resp, err := httpClient.Do(req)
 	if err != nil {
