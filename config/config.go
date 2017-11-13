@@ -40,7 +40,10 @@ func getUserHomeDir() string {
 
 func readConfig() *Config {
 	if _, err := os.Stat(baseDirectory); os.IsNotExist(err) {
-		os.MkdirAll(baseDirectory, defaultDirPermission)
+		err := os.MkdirAll(baseDirectory, defaultDirPermission)
+		if err != nil {
+			panic("Could not create config directory: " + err.Error())
+		}
 	}
 
 	viper.AddConfigPath(getUserHomeDir() + baseDirectory)
