@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/pusher/cli/config"
+	"github.com/theherk/viper"
 )
 
 const getAPIKeyEndpoint = "/account/api_key"
@@ -17,8 +18,8 @@ type apiKeyResponse struct {
 	APIKey string `json:"apikey"`
 }
 
-func GetAPIKey(e, p string) (string, error) {
-	response, err := basicAuthRequest(getAPIKeyEndpoint, e, p)
+func GetAPIKey(email, password string) (string, error) {
+	response, err := basicAuthRequest(getAPIKeyEndpoint, email, password)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("The Pusher API didn't respond correctly. Please try again later!")
@@ -35,7 +36,7 @@ func GetAPIKey(e, p string) (string, error) {
 }
 
 func basicAuthRequest(path string, username string, password string) ([]byte, error) {
-	req, err := http.NewRequest("GET", baseEndpoint+path, nil)
+	req, err := http.NewRequest("GET", viper.GetString("Endpoint")+path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +61,7 @@ func basicAuthRequest(path string, username string, password string) ([]byte, er
 
 //isAPIKeyValid returns true if the stored API key is valid.
 func isAPIKeyValid() bool {
-	conf := config.Get()
-	if conf.Token != "" {
+	if viper.GetString("token") != "" {
 		_, err := GetAllApps()
 		if err == nil {
 			return true

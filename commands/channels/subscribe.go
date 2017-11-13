@@ -69,6 +69,8 @@ var Subscribe = &cobra.Command{
 		channelColor.Printf(commands.ChannelName)
 		fmt.Printf("'.\n")
 
+		//sleep forever
+		select {}
 	},
 }
 

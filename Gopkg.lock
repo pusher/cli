@@ -22,7 +22,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/hashicorp/hcl"
-  packages = [".","hcl/ast","hcl/parser","hcl/scanner","hcl/strconv","hcl/token","json/parser","json/scanner","json/token"]
+  packages = [".","hcl/ast","hcl/parser","hcl/printer","hcl/scanner","hcl/strconv","hcl/token","json/parser","json/scanner","json/token"]
   revision = "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8"
 
 [[projects]]
@@ -116,10 +116,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/spf13/viper"
+  branch = "master"
+  name = "github.com/theherk/viper"
   packages = ["."]
-  revision = "25b30aa063fc18e48662b86996252eabdcf2f0c7"
-  version = "v1.0.0"
+  revision = "1c64bdc5d63b5e58e48d1d1b4928fc9cf735c399"
 
 [[projects]]
   branch = "master"
@@ -154,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "28089211ad1354f2dc3031a54b2cb919e522c5c6af6119e89d40abbdcb0cd513"
+  inputs-digest = "c94501a40cc3c214fbecf5ee5e11c9dfb201022ffac020debd8ab32b426ceb4b"
   solver-name = "gps-cdcl"
   solver-version = 1
