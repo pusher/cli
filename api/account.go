@@ -36,7 +36,7 @@ func GetAPIKey(email, password string) (string, error) {
 }
 
 func basicAuthRequest(path string, username string, password string) ([]byte, error) {
-	req, err := http.NewRequest("GET", viper.GetString("Endpoint")+path, nil)
+	req, err := http.NewRequest("GET", viper.GetString("endpoint")+path, nil)
 	if err != nil {
 		return nil, err
 	}
