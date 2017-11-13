@@ -35,7 +35,10 @@ func getUserHomeDir() string {
 func Init() {
 	viper.SetConfigFile(getUserHomeDir() + baseDirectory + fileName)
 	viper.SetDefault("endpoint", defaultEndpoint)
-	viper.ReadInConfig()
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Delete deletes the config file.
