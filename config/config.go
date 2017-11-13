@@ -7,11 +7,13 @@ import (
 	"os"
 	"os/user"
 
+	"path"
+
 	"github.com/spf13/viper"
 )
 
 const (
-	baseDirectory           = "/.config/pusher-cli"
+	configDirInHomeDir      = ".config/pusher-cli"
 	defaultDirPermission    = 0755
 	defaultConfigPermission = 0600
 )
@@ -39,14 +41,14 @@ func getUserHomeDir() string {
 }
 
 func readConfig() *Config {
-	if _, err := os.Stat(baseDirectory); os.IsNotExist(err) {
-		err := os.MkdirAll(baseDirectory, defaultDirPermission)
+	if _, err := os.Stat(configDirInHomeDir); os.IsNotExist(err) {
+		err := os.MkdirAll(configDirInHomeDir, defaultDirPermission)
 		if err != nil {
 			panic("Could not create config directory: " + err.Error())
 		}
 	}
 
-	viper.AddConfigPath(getUserHomeDir() + baseDirectory)
+	viper.AddConfigPath(path.Join(getUserHomeDir(), configDirInHomeDir))
 	viper.SetConfigName("config")
 
 	viper.SetConfigType("json")
@@ -72,8 +74,8 @@ func Get() *Config {
 }
 
 func Store() error {
-	if _, err := os.Stat(getUserHomeDir() + baseDirectory); os.IsNotExist(err) {
-		os.MkdirAll(getUserHomeDir()+baseDirectory, defaultDirPermission)
+	if _, err := os.Stat(getUserHomeDir() + configDirInHomeDir); os.IsNotExist(err) {
+		os.MkdirAll(getUserHomeDir()+configDirInHomeDir, defaultDirPermission)
 	}
 
 	confJson, err := json.Marshal(conf)
@@ -81,11 +83,11 @@ func Store() error {
 		return err
 	}
 
-	return ioutil.WriteFile(getUserHomeDir()+baseDirectory+"/config.json", confJson, defaultConfigPermission)
+	return ioutil.WriteFile(getUserHomeDir()+configDirInHomeDir+"/config.json", confJson, defaultConfigPermission)
 }
 
 func Delete() error {
-	return os.Remove(getUserHomeDir() + baseDirectory + "/config.json")
+	return os.Remove(getUserHomeDir() + configDirInHomeDir + "/config.json")
 }
 
 // IsSet checks if [configVariableName] has been set in the read config file.
