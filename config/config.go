@@ -17,7 +17,8 @@ const (
 )
 
 type Config struct {
-	Token string `mapstructure:"token"`
+	Token        string `mapstructure:"token"`
+	BaseEndpoint string `mapstructure:"baseEndpoint"`
 }
 
 var conf *Config
