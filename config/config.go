@@ -34,7 +34,10 @@ func getConfigPath() string {
 func Init() {
 	viper.SetConfigFile(getConfigPath())
 	viper.SetDefault("endpoint", "https://cli.pusher.com")
-	viper.ReadInConfig()
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Delete deletes the config file.
