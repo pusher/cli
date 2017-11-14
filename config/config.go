@@ -4,14 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"path"
 
 	"github.com/theherk/viper"
-)
-
-const (
-	baseDirectory   = "/.config/"
-	fileName        = "pusherconfig.json"
-	defaultEndpoint = "http://localhost:3000"
 )
 
 var version = "master"
@@ -31,14 +26,18 @@ func getUserHomeDir() string {
 	return usr.HomeDir
 }
 
+func getConfigPath() string {
+	return path.Join(getUserHomeDir(), ".config/pusher.json")
+}
+
 //Init sets the config files location and attempts to read it in.
 func Init() {
-	viper.SetConfigFile(getUserHomeDir() + baseDirectory + fileName)
-	viper.SetDefault("endpoint", defaultEndpoint)
+	viper.SetConfigFile(getConfigPath())
+	viper.SetDefault("endpoint", "https://cli.pusher.com")
 	viper.ReadInConfig()
 }
 
 // Delete deletes the config file.
 func Delete() error {
-	return os.Remove(getUserHomeDir() + baseDirectory + fileName)
+	return os.Remove(getConfigPath())
 }
