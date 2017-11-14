@@ -29,7 +29,7 @@ func GetAPIKey(email, password string) (string, error) {
 	var dat apiKeyResponse
 	err = json.Unmarshal(response, &dat)
 	if dat.APIKey == "" || err != nil {
-		return "", errors.New("Error parsing JSON")
+		return "", errors.New("Error parsing JSON: " + err.Error() + " when parsing response: " + string(response))
 	}
 
 	return dat.APIKey, nil
