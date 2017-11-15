@@ -32,9 +32,7 @@ var Login = &cobra.Command{
 		// check if the user/pass can get an API key
 		apikey, err := api.GetAPIKey(email, password)
 		if err != nil {
-			fmt.Println("Error getting API key")
-			os.Exit(1)
-			return
+			panic("Could not get API key: " + err.Error())
 		}
 		if apikey == "" {
 			fmt.Println("There is No API key associated with those account details. Make sure you've set up your API key in the Admin Dashboard, and that are your details are correct.")
@@ -45,7 +43,7 @@ var Login = &cobra.Command{
 		fmt.Println(apikey)
 		err = viper.WriteConfig()
 		if err != nil {
-			fmt.Println(err)
+			panic("Could not write config: " + err.Error())
 		}
 	},
 }
