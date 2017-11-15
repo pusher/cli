@@ -6,6 +6,8 @@ import (
 	"os/user"
 	"path"
 
+	"io/ioutil"
+
 	"github.com/theherk/viper"
 )
 
@@ -32,6 +34,13 @@ func getConfigPath() string {
 
 //Init sets the config files location and attempts to read it in.
 func Init() {
+	if _, err := os.Stat(getConfigPath()); os.IsNotExist(err) {
+		err = ioutil.WriteFile(getConfigPath(), []byte("{}"), 0600)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	viper.SetConfigFile(getConfigPath())
 	viper.SetDefault("endpoint", "https://cli.pusher.com")
 	err := viper.ReadInConfig()
