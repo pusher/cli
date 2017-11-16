@@ -55,7 +55,7 @@ func basicAuthRequest(path string, username string, password string) ([]byte, er
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || 400 <= resp.StatusCode {
-		return nil, fmt.Errorf("Unexpected status code %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
