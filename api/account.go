@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,7 +20,7 @@ type apiKeyResponse struct {
 func GetAPIKey(email, password string) (string, error) {
 	req, err := http.NewRequest("GET", viper.GetString("endpoint")+getAPIKeyEndpoint, nil)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	req.Header.Set("Content-type", "application/json")
@@ -30,12 +29,12 @@ func GetAPIKey(email, password string) (string, error) {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 	defer resp.Body.Close()
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	if resp.StatusCode == 401 {
@@ -49,10 +48,10 @@ func GetAPIKey(email, password string) (string, error) {
 	var dat apiKeyResponse
 	err = json.Unmarshal(responseBody, &dat)
 	if err != nil {
-		return "", errors.New("could not unmarshal JSON: " + err.Error() + " when parsing response: " + string(responseBody))
+		panic("could not unmarshal JSON: " + err.Error() + " when parsing response: " + string(responseBody))
 	}
 	if dat.APIKey == "" {
-		return "", errors.New("expected API key in response, but got: " + string(responseBody))
+		panic("expected API key in response, but got: " + string(responseBody))
 	}
 
 	return dat.APIKey, nil
