@@ -8,18 +8,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const pusherLogo = `
-	██████╗ ██╗   ██╗███████╗██╗  ██╗███████╗██████╗
-  	██╔══██╗██║   ██║██╔════╝██║  ██║██╔════╝██╔══██╗ 
- 	██████╔╝██║   ██║███████╗███████║█████╗  ██████╔╝ 
-	██╔═══╝ ██║   ██║╚════██║██╔══██║██╔══╝  ██╔══██╗
-	██║     ╚██████╔╝███████║██║  ██║███████╗██║  ██║ 
-	╚═╝      ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝     
-`
-
 func main() {
 	config.Init()
-	var rootCmd = &cobra.Command{Use: "pusher", Short: pusherLogo}
+	var rootCmd = &cobra.Command{Use: "pusher", Short: "A CLI for your Pusher account. Find out more at https://pusher.com"}
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
