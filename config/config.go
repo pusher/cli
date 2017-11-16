@@ -48,8 +48,3 @@ func Init() {
 		panic(err)
 	}
 }
-
-// Delete deletes the config file.
-func Delete() error {
-	return os.Remove(getConfigPath())
-}
