@@ -40,7 +40,6 @@ var Login = &cobra.Command{
 		}
 		fmt.Println("Got your API key!")
 		viper.Set("token", apikey)
-		fmt.Println(apikey)
 		err = viper.WriteConfig()
 		if err != nil {
 			panic("Could not write config: " + err.Error())
