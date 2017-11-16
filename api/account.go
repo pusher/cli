@@ -19,50 +19,43 @@ type apiKeyResponse struct {
 }
 
 func GetAPIKey(email, password string) (string, error) {
-	response, err := basicAuthRequest(getAPIKeyEndpoint, email, password)
+	req, err := http.NewRequest("GET", viper.GetString("endpoint")+getAPIKeyEndpoint, nil)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("The Pusher API didn't respond correctly. Please try again later!")
 		return "", err
-	}
-
-	var dat apiKeyResponse
-	err = json.Unmarshal(response, &dat)
-	if err != nil {
-		return "", errors.New("could not unmarshal JSON: " + err.Error() + " when parsing response: " + string(response))
-	}
-	if dat.APIKey == "" {
-		return "", errors.New("expected API key in response, but got: " + string(response))
-	}
-
-	return dat.APIKey, nil
-}
-
-func basicAuthRequest(path string, username string, password string) ([]byte, error) {
-	req, err := http.NewRequest("GET", viper.GetString("endpoint")+path, nil)
-	if err != nil {
-		return nil, err
 	}
 
 	req.Header.Set("Content-type", "application/json")
 	req.Header.Set("User-Agent", "PusherCLI/"+config.GetVersion())
-	req.SetBasicAuth(username, password)
+	req.SetBasicAuth(email, password)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || 400 <= resp.StatusCode {
-		return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
-	}
-
-	respBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return respBody, nil
+
+	if resp.StatusCode == 401 {
+		return "", fmt.Errorf("unknown email address or incorrect password; try https://dashboard.staging.pusher.com/accounts/sign_in")
+	} else if resp.StatusCode == 404 {
+		return "", fmt.Errorf("this account does not have an API key; set one at https://dashboard.staging.pusher.com/accounts/edit")
+	} else if resp.StatusCode != 200 {
+		return "", fmt.Errorf("unexpected status code %d with body: %s", resp.StatusCode, string(responseBody))
+	}
+
+	var dat apiKeyResponse
+	err = json.Unmarshal(responseBody, &dat)
+	if err != nil {
+		return "", errors.New("could not unmarshal JSON: " + err.Error() + " when parsing response: " + string(responseBody))
+	}
+	if dat.APIKey == "" {
+		return "", errors.New("expected API key in response, but got: " + string(responseBody))
+	}
+
+	return dat.APIKey, nil
 }
 
 //isAPIKeyValid returns true if the stored API key is valid.
