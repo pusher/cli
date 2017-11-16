@@ -29,10 +29,10 @@ func GetAPIKey(email, password string) (string, error) {
 	var dat apiKeyResponse
 	err = json.Unmarshal(response, &dat)
 	if err != nil {
-		return "", errors.New("Error unmarshaling JSON: " + err.Error() + " when parsing response: " + string(response))
+		return "", errors.New("could not unmarshal JSON: " + err.Error() + " when parsing response: " + string(response))
 	}
 	if dat.APIKey == "" {
-		return "", errors.New("Expected API key in response, but got: " + string(response))
+		return "", errors.New("expected API key in response, but got: " + string(response))
 	}
 
 	return dat.APIKey, nil
