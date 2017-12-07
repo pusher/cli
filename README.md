@@ -1,3 +1,5 @@
+# Here be dragons! Alpha-quality software! It may eat your dog!
+
 # Pusher CLI [(pusher.com)](https://pusher.com)
 
 This is a tool that allows developers access to their Pusher accounts via a command line interface. 
