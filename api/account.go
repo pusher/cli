@@ -54,7 +54,11 @@ func basicAuthRequest(path string, username string, password string) ([]byte, er
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode < 200 || 400 <= resp.StatusCode {
+	if resp.StatusCode == 401 {
+		return nil, fmt.Errorf("invalid username or password")
+	} else if resp.StatusCode == 404 {
+		return nil, fmt.Errorf("no api key associated with the account, please visit https://dashboard.pusher.com/accounts/edit to add one")
+	} else if resp.StatusCode < 200 || 400 <= resp.StatusCode {
 		return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
 	}
 

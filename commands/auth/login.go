@@ -33,10 +33,7 @@ var Login = &cobra.Command{
 		// check if the user/pass can get an API key
 		apikey, err := api.GetAPIKey(email, password)
 		if err != nil {
-			panic("Could not get API key: " + err.Error())
-		}
-		if apikey == "" {
-			fmt.Println("There is No API key associated with those account details. Make sure you've set up your API key in the Admin Dashboard, and that are your details are correct.")
+			fmt.Println("Couldn't get API key: " + err.Error())
 			return
 		}
 		fmt.Println("Got your API key!")

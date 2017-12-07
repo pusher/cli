@@ -22,7 +22,7 @@ func GetAllTokensForApp(appId string) ([]AppToken, error) {
 	tokens := []AppToken{}
 	err = json.Unmarshal([]byte(response), &tokens)
 	if err != nil {
-		return nil, errors.New("That app ID wasn't recognised as linked to your account.")
+		return nil, errors.New("that app ID wasn't recognised as linked to your account")
 	}
 	return tokens, nil
 }
