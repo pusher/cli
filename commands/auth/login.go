@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"os"
+	"syscall"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -26,7 +27,7 @@ var Login = &cobra.Command{
 		fmt.Scanln(&email)
 
 		fmt.Println("What is your password?")
-		passwordBytes, _ := terminal.ReadPassword(0)
+		passwordBytes, _ := terminal.ReadPassword(int(syscall.Stdin))
 		password := string(passwordBytes)
 
 		// check if the user/pass can get an API key
