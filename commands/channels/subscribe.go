@@ -47,7 +47,7 @@ var Subscribe = &cobra.Command{
 		pusher.New(token.Key)
 		client := pusher.NewWithConfig(pusher.ClientConfig{
 			Scheme: "wss",
-			Host:   "ws-" + app.Cluster + ".staging.pusher.com",
+			Host:   "ws-" + app.Cluster + ".pusher.com",
 			Port:   "443",
 			Key:    token.Key,
 			Secret: token.Secret,

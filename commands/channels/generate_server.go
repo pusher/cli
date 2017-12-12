@@ -29,6 +29,13 @@ var GeneratePhp = &cobra.Command{
 			return
 		}
 
+		app, err := api.GetApp(commands.AppID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			os.Exit(1)
+			return
+		}
+
 		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
@@ -40,7 +47,7 @@ var GeneratePhp = &cobra.Command{
 			require __DIR__ . '/vendor/autoload.php';
 			
 			$options = array(
-				'host' => 'api-test1.staging.pusher.com',
+				'host' => 'api-` + app.Cluster + `.pusher.com',
 				'encrypted' => true
 			);
 			
@@ -71,6 +78,13 @@ var GeneratePython = &cobra.Command{
 			return
 		}
 
+		app, err := api.GetApp(commands.AppID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			os.Exit(1)
+			return
+		}
+
 		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
@@ -82,7 +96,7 @@ var GeneratePython = &cobra.Command{
 		pusher_client = pusher.Pusher(app_id='` + commands.AppID + `',
 			key='` + token.Key + `', 
 			secret='` + token.Secret + `',
-			host='api-test1.staging.pusher.com',
+			host='api-` + app.Cluster + `.pusher.com',
 			ssl=True
 		)
 		
