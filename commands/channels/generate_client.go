@@ -29,6 +29,13 @@ var GenerateWeb = &cobra.Command{
 			return
 		}
 
+		app, err := api.GetApp(commands.AppID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			os.Exit(1)
+			return
+		}
+
 		token, err := api.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
@@ -45,8 +52,8 @@ var GenerateWeb = &cobra.Command{
 			Pusher.logToConsole = true;
 			
 			var pusher = new Pusher('` + token.Key + `', {
-      	wsHost: 'ws-test1.staging.pusher.com',
-      	httpHost: 'sockjs-test1.staging.pusher.com',
+				wsHost: 'ws-` + app.Cluster + `.pusher.com',
+				httpHost: 'sockjs-` + app.Cluster + `.pusher.com',
 				encrypted: true
 			});
 			

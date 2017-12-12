@@ -59,7 +59,7 @@ var Trigger = &cobra.Command{
 			AppId:   commands.AppID,
 			Key:     token.Key,
 			Secret:  token.Secret,
-			Cluster: app.Cluster + ".staging", // app.Cluster,
+			Cluster: app.Cluster,
 		}
 
 		_, err = client.Trigger(commands.ChannelName, commands.EventName, commands.Message)
