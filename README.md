@@ -37,3 +37,13 @@ brew install pusher/brew/pusher
 1. Create a new branch by running `git checkout -b <YOUR_BRANCH_NAME_HERE> master`
 1. Pull dependencies with `dep ensure`;
 1. Ready to hack.
+
+We [publish binaries on GitHub](https://github.com/pusher/cli/releases)
+
+1. Get [fpm](https://github.com/jordansissel/fpm)
+1. Get [goreleaser](https://goreleaser.com/)
+1. Get `rpmbuild`, e.g. `brew install rpm` on MacOS
+1. [Generate a GitHub personal access token](https://github.com/settings/tokens)
+   with the `repo` scope selected.
+   Set this as env var `GITHUB_TOKEN`.
+1. From this directory, run `goreleaser` (or [follow these instructions](https://goreleaser.com/#releasing))
