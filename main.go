@@ -14,7 +14,7 @@ func main() {
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
-	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger)
+	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo)
 
 	var Generate = &cobra.Command{Use: "generate",
 		Short: "Generate a Channels client, server, or Authorisation server"}
