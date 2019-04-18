@@ -3,9 +3,6 @@ package auth
 import (
 	"fmt"
 	"os"
-	"syscall"
-
-	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/pusher/cli/api"
 	"github.com/spf13/cobra"
@@ -15,30 +12,25 @@ import (
 // Login allows users to log in using an API token.
 var Login = &cobra.Command{
 	Use:   "login",
-	Short: "Enter and store Pusher account credentials",
+	Short: "Enter and store Pusher API key",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		if APIKeyValid() {
-			fmt.Println("Your API key is valid. If you'd like to use a different API key, use `logout` first.")
+			fmt.Println("Your current API key is valid. If you'd like to use a different API key, use `logout` first.")
 			os.Exit(1)
 		}
-		fmt.Println("What is your email address?")
-		var email string
-		fmt.Scanln(&email)
 
-		fmt.Println("What is your password?")
-		passwordBytes, _ := terminal.ReadPassword(int(syscall.Stdin))
-		password := string(passwordBytes)
-
-		// check if the user/pass can get an API key
-		apikey, err := api.GetAPIKey(email, password)
-		if err != nil {
-			fmt.Println("Couldn't get API key: " + err.Error())
-			return
-		}
-		fmt.Println("Got your API key!")
+		fmt.Println("What is your API key? (Find this at https://dashboard.pusher.com/accounts/edit)")
+		var apikey string
+		fmt.Scanln(&apikey)
 		viper.Set("token", apikey)
-		err = viper.WriteConfig()
+
+		if !APIKeyValid() {
+			fmt.Println("That API key is not valid!")
+			os.Exit(1)
+		}
+
+		err := viper.WriteConfig()
 		if err != nil {
 			panic("Could not write config: " + err.Error())
 		}
