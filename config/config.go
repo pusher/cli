@@ -29,7 +29,7 @@ func getUserHomeDir() string {
 }
 
 func getConfigDir() string {
-	return path.Join(getUserHomeDir(), ".config2")
+	return path.Join(getUserHomeDir(), ".config")
 }
 
 func getConfigPath() string {
