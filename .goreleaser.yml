@@ -14,6 +14,8 @@ build:
   goarch:
     - amd64
   ldflags: -s -w -X github.com/pusher/cli/config.version={{.Version}}
+  tags:
+    - osusergo
 archives:
 - replacements:
     darwin: Darwin
@@ -38,7 +40,7 @@ nfpm:
     - deb
     - rpm
   homepage: "https://pusher.com/"
-  maintainer: "Kevin <kevin.norman@pusher.com>"
+  maintainer: "Pusher <support@pusher.com>"
   vendor: Pusher
 brew:
   description: "Pusher CLI!"
@@ -46,4 +48,4 @@ brew:
     name: homebrew-brew
     owner: pusher
   homepage: "https://pusher.com/"
-  
+
