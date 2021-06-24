@@ -14,6 +14,8 @@ build:
   goarch:
     - amd64
   ldflags: -s -w -X github.com/pusher/cli/config.version={{.Version}}
+  tags:
+    - osusergo
 archives:
 - replacements:
     darwin: Darwin
@@ -31,19 +33,19 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-nfpm:
-  license: MIT
-  description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
-  formats:
-    - deb
-    - rpm
-  homepage: "https://pusher.com/"
-  maintainer: "Kevin <kevin.norman@pusher.com>"
-  vendor: Pusher
-brew:
-  description: "Pusher CLI!"
-  github:
-    name: homebrew-brew
-    owner: pusher
-  homepage: "https://pusher.com/"
-  
+nfpms:
+  - license: MIT
+    description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
+    formats:
+      - deb
+      - rpm
+    homepage: "https://pusher.com/"
+    maintainer: "Pusher <support@pusher.com>"
+    vendor: Pusher
+brews:
+  - description: "Pusher CLI!"
+    tap:
+      name: homebrew-brew
+      owner: pusher
+    homepage: "https://pusher.com/"
+
