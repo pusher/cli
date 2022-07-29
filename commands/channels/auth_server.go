@@ -66,7 +66,7 @@ var LocalAuthServer = &cobra.Command{
 
 			resp.Header().Set("Access-Control-Allow-Origin", "*")
 
-			fmt.Fprintf(resp, string(response))
+			fmt.Fprint(resp, string(response))
 		})
 
 		portColor := color.New(color.FgBlue)
@@ -74,7 +74,12 @@ var LocalAuthServer = &cobra.Command{
 		portColor.Printf("%d", localAuthServerPort)
 		fmt.Print(".\n")
 
-		http.ListenAndServe(fmt.Sprintf(":%d", localAuthServerPort), nil)
+		err = http.ListenAndServe(fmt.Sprintf(":%d", localAuthServerPort), nil)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not listen and serve: %s\n", err.Error())
+			os.Exit(1)
+			return
+		}
 	},
 }
 

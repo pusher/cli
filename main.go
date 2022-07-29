@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/pusher/cli/commands/auth"
 	"github.com/pusher/cli/commands/channels"
 	"github.com/pusher/cli/commands/cli"
@@ -27,5 +30,11 @@ func main() {
 	rootCmd.AddCommand(Channels)
 	rootCmd.AddCommand(auth.Login, auth.Logout)
 	rootCmd.AddCommand(cli.Version)
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
+		os.Exit(1)
+		return
+	}
+
 }

@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 
 var (
 	httpClient = &http.Client{Timeout: 5 * time.Second}
-	rnd        = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 func makeRequest(reqtype string, path string, body []byte) (string, error) {
