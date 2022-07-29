@@ -21,7 +21,7 @@ You can download the latest release from [here](https://github.com/pusher/cli/re
 1. Clone this repository;
 1. Pull dependencies with `dep ensure`;
 1. Build with `go build -o pusher`;
-1. Copy `pusher` to your `$GOPATH/bin` or just use it as is.
+1. Copy `pusher` to somewhere in your `$PATH` or just use it as is.
 
 ### Homebrew
 
@@ -35,7 +35,7 @@ brew install pusher/brew/pusher
 
 1. Clone this repository;
 1. Create a new branch by running `git checkout -b <YOUR_BRANCH_NAME_HERE> master`
-1. Pull dependencies with `dep ensure`;
+1. Run `go test` to fetch dependencies and run tests for the first time.
 1. Ready to hack.
 
 We [publish binaries on GitHub](https://github.com/pusher/cli/releases)
