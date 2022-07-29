@@ -56,13 +56,13 @@ var Trigger = &cobra.Command{
 		}
 
 		client := pusher.Client{
-			AppId:   commands.AppID,
+			AppID:   commands.AppID,
 			Key:     token.Key,
 			Secret:  token.Secret,
 			Cluster: app.Cluster,
 		}
 
-		_, err = client.Trigger(commands.ChannelName, commands.EventName, commands.Message)
+		err = client.Trigger(commands.ChannelName, commands.EventName, commands.Message)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not trigger: %s\n", err.Error())
 			return

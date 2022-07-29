@@ -49,7 +49,7 @@ var LocalAuthServer = &cobra.Command{
 		}
 
 		pClient := pusher.Client{
-			AppId:   fmt.Sprintf("%d", app.Id),
+			AppID:   fmt.Sprintf("%d", app.ID),
 			Key:     token.Key,
 			Secret:  token.Secret,
 			Cluster: app.Cluster,

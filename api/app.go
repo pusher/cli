@@ -8,7 +8,7 @@ import (
 
 type App struct {
 	Name    string `json:"name"`
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 	Cluster string `json:"cluster"`
 }
 
@@ -29,14 +29,14 @@ func GetAllApps() ([]App, error) {
 	return apps, nil
 }
 
-func GetApp(appId string) (*App, error) {
+func GetApp(appID string) (*App, error) {
 	apps, err := GetAllApps()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, app := range apps {
-		if fmt.Sprintf("%d", app.Id) == appId {
+		if fmt.Sprintf("%d", app.ID) == appID {
 			return &app, nil
 		}
 	}
