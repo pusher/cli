@@ -39,7 +39,7 @@ var Apps = &cobra.Command{
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{"App ID", "App Name", "Cluster"})
 			for _, app := range apps {
-				table.Append([]string{strconv.Itoa(app.Id), app.Name, app.Cluster})
+				table.Append([]string{strconv.Itoa(app.ID), app.Name, app.Cluster})
 			}
 			table.Render()
 		}

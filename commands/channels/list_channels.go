@@ -38,7 +38,7 @@ var ListChannels = &cobra.Command{
 		}
 
 		client := pusher.Client{
-			AppId:   commands.AppID,
+			AppID:   commands.AppID,
 			Key:     token.Key,
 			Secret:  token.Secret,
 			Cluster: app.Cluster,
