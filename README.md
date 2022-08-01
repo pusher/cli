@@ -35,7 +35,7 @@ brew install pusher/brew/pusher
 
 1. Clone this repository;
 1. Create a new branch by running `git checkout -b <YOUR_BRANCH_NAME_HERE> master`
-1. Run `go test` to fetch dependencies and run tests for the first time.
+1. Run `go build` to fetch dependencies and run tests for the first time.
 1. Ready to hack.
 
 We [publish binaries on GitHub](https://github.com/pusher/cli/releases)
