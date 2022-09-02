@@ -28,19 +28,19 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-nfpms:
-  - license: MIT
-    description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
-    formats:
-      - deb
-      - rpm
-    homepage: "https://pusher.com/"
-    maintainer: "Pusher <support@pusher.com>"
-    vendor: Pusher
-brews:
-  - description: "Pusher CLI!"
-    tap:
-      name: homebrew-brew
-      owner: pusher
-    homepage: "https://pusher.com/"
+# nfpms:
+#  - license: MIT
+#    description: "Pusher CLI provides access to Pusher platform functionality via a CLI!"
+#    formats:
+#      - deb
+#      - rpm
+#    homepage: "https://pusher.com/"
+#    maintainer: "Pusher <support@pusher.com>"
+#    vendor: Pusher
+#brews:
+#  - description: "Pusher CLI!"
+#    tap:
+#      name: homebrew-brew
+#      owner: pusher
+#    homepage: "https://pusher.com/"
 
