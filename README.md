@@ -37,12 +37,7 @@ brew install pusher/brew/pusher
 1. Run `go build` to fetch dependencies and run tests for the first time.
 1. Ready to hack.
 
-We [publish binaries on GitHub](https://github.com/pusher/cli/releases)
+We [publish binaries on GitHub](https://github.com/pusher/cli/releases) and we use a github action to release for multiple platforms. To create a release just tag
 
-1. Get [fpm](https://github.com/jordansissel/fpm)
-1. Get [goreleaser](https://goreleaser.com/)
-1. Get `rpmbuild`, e.g. `brew install rpm` on MacOS
-1. [Generate a GitHub personal access token](https://github.com/settings/tokens)
-   with the `repo` scope selected.
-   Set this as env var `GITHUB_TOKEN`.
-1. From this directory, run `goreleaser` (or [follow these instructions](https://goreleaser.com/#releasing))
+1. git tag -a v0.14 -m "v0.14"
+1. git push origin v0.14
