@@ -19,7 +19,6 @@ You can download the latest release from [here](https://github.com/pusher/cli/re
 ### Building from Source
 
 1. Clone this repository;
-1. Pull dependencies with `dep ensure`;
 1. Build with `go build -o pusher`;
 1. Copy `pusher` to somewhere in your `$PATH` or just use it as is.
 
