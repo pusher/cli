@@ -39,5 +39,5 @@ brew install pusher/brew/pusher
 
 We [publish binaries on GitHub](https://github.com/pusher/cli/releases) and we use a github action to release for multiple platforms. To create a release just tag
 
-1. git tag -a v0.14 -m "v0.14"
-1. git push origin v0.14
+1. `git tag -a v0.14 -m "v0.14"`
+1. `git push origin v0.14`
