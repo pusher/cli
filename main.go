@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 
+	"github.com/pusher/cli/api"
 	"github.com/pusher/cli/commands/auth"
 	"github.com/pusher/cli/commands/channels"
 	"github.com/pusher/cli/commands/cli"
@@ -11,13 +13,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type osFS struct{}
+
+func (osFS) Open(name string) (fs.File, error)    { return os.Open(name) }
+func (osFS) ReadFile(name string) ([]byte, error) { return os.ReadFile(name) }
+
 func main() {
 	config.Init()
 	var rootCmd = &cobra.Command{Use: "pusher", Short: "A CLI for your Pusher account. Find out more at https://pusher.com"}
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
-	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo)
+	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo, channels.NewFunctionsCommand(api.NewPusherApi(), osFS{}))
 
 	var Generate = &cobra.Command{Use: "generate",
 		Short: "Generate a Channels client, server, or Authorisation server"}

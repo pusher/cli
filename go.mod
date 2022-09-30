@@ -5,7 +5,8 @@ go 1.15
 require (
 	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/golang/mock v1.6.0 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect

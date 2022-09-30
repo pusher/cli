@@ -25,7 +25,8 @@ var Apps = &cobra.Command{
 			return
 		}
 
-		apps, err := api.GetAllApps()
+		p := api.NewPusherApi()
+		apps, err := p.GetAllApps()
 		if err != nil {
 			fmt.Println("Failed to retrieve the list of apps.")
 			os.Exit(1)

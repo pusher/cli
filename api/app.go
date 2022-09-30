@@ -12,10 +12,10 @@ type App struct {
 	Cluster string `json:"cluster"`
 }
 
-const getAppsAPIEndpoint = "/apps.json"
+const GetAppsAPIEndpoint = "/apps.json"
 
-func GetAllApps() ([]App, error) {
-	response, err := makeRequest("GET", getAppsAPIEndpoint, nil)
+func (p *PusherApi) GetAllApps() ([]App, error) {
+	response, err := p.makeRequest("GET", GetAppsAPIEndpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func GetAllApps() ([]App, error) {
 	return apps, nil
 }
 
-func GetApp(appID string) (*App, error) {
-	apps, err := GetAllApps()
+func (p *PusherApi) GetApp(appID string) (*App, error) {
+	apps, err := p.GetAllApps()
 	if err != nil {
 		return nil, err
 	}

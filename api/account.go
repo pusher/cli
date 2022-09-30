@@ -8,9 +8,9 @@ import (
 )
 
 //isAPIKeyValid returns true if the stored API key is valid.
-func isAPIKeyValid() bool {
+func (p *PusherApi) isAPIKeyValid() bool {
 	if viper.GetString("token") != "" {
-		_, err := GetAllApps()
+		_, err := p.GetAllApps()
 		if err == nil {
 			return true
 		}
@@ -18,8 +18,8 @@ func isAPIKeyValid() bool {
 	return false
 }
 
-func validateKeyOrDie() {
-	if !isAPIKeyValid() {
+func (p *PusherApi) validateKeyOrDie() {
+	if !p.isAPIKeyValid() {
 		fmt.Println("Your API key isn't valid. Add one with the `login` command.")
 		os.Exit(1)
 	}

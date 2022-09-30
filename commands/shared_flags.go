@@ -8,3 +8,5 @@ var OutputAsJSON bool
 var FilterByPrefix string
 var FetchUserCount bool
 var FetchSubscriptionCount bool
+var FunctionName string
+var FunctionEvents []string

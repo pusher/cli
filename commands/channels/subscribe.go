@@ -30,14 +30,15 @@ var Subscribe = &cobra.Command{
 			return
 		}
 
-		app, err := api.GetApp(commands.AppID)
+		p := api.NewPusherApi()
+		app, err := p.GetApp(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		token, err := api.GetToken(commands.AppID)
+		token, err := p.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			os.Exit(1)
