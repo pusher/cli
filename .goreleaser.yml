@@ -38,10 +38,9 @@ nfpms:
     homepage: "https://pusher.com/"
     maintainer: "Pusher <support@pusher.com>"
     vendor: Pusher
-# brews:
-#  - description: "Pusher CLI!"
-#    tap:
-#      name: homebrew-brew
-#      owner: pusher
-#    homepage: "https://pusher.com/"
-
+brews:
+  - description: "Pusher CLI!"
+    tap:
+      name: homebrew-brew
+      owner: pusher
+    homepage: "https://pusher.com/"
