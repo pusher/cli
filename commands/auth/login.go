@@ -39,8 +39,9 @@ var Login = &cobra.Command{
 
 //APIKeyValid returns true if the stored API key is valid.
 func APIKeyValid() bool {
+	p := api.NewPusherApi()
 	if viper.GetString("token") != "" {
-		_, err := api.GetAllApps()
+		_, err := p.GetAllApps()
 		if err == nil {
 			return true
 		}

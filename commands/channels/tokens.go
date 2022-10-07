@@ -25,7 +25,8 @@ var Tokens = &cobra.Command{
 			return
 		}
 
-		tokens, err := api.GetAllTokensForApp(commands.AppID)
+		p := api.NewPusherApi()
+		tokens, err := p.GetAllTokensForApp(commands.AppID)
 		if err != nil {
 			fmt.Printf("Failed to retrieve the list of tokens: %s\n", err.Error())
 			os.Exit(1)
