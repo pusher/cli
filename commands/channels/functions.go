@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"strconv"
 	"strings"
+	"time"
 
 	"encoding/json"
 
@@ -28,6 +29,7 @@ func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) *cobra.Co
 	cmd.AddCommand(NewFunctionDeleteCommand(pusher))
 	cmd.AddCommand(NewFunctionGetCommand(pusher))
 	cmd.AddCommand(NewFunctionsUpdateCommand(pusher, fs))
+	cmd.AddCommand(NewFunctionGetLogsCommand(pusher))
 	return cmd
 }
 
@@ -184,5 +186,37 @@ func NewFunctionsUpdateCommand(functionService api.FunctionService, fs fs.ReadFi
 	cmd.PersistentFlags().StringVar(&commands.FunctionName, "name", "", "Function name")
 	cmd.MarkPersistentFlagRequired("name")
 	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", []string{}, "Channel events that trigger this function")
+	return cmd
+}
+
+func NewFunctionGetLogsCommand(functionService api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "logs <function_id>",
+		Short: "Get logs of a specific function",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			logs, err := functionService.GetFunctionLogs(commands.AppID, args[0])
+			if err != nil {
+				return err
+			}
+
+			if commands.OutputAsJSON {
+				JSONBytes, _ := json.Marshal(logs)
+				cmd.Println(string(JSONBytes))
+
+				return nil
+			}
+
+			for _, l := range logs.Events {
+				t := time.Unix(0, l.Timestamp*1000000).Format("2006-01-02 15:04:05")
+				cmd.Printf("%s\t%s\n", t, l.Message)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
+
 	return cmd
 }
