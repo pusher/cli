@@ -1,3 +1,5 @@
+//go:generate mockgen -source function.go -destination mock/function_mock.go -package mock
+
 package api
 
 import (

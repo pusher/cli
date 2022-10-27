@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/pusher/cli/api"
-	"github.com/pusher/cli/mocks"
+	"github.com/pusher/cli/api/mock"
 	"github.com/theherk/viper"
 )
 
@@ -20,7 +20,7 @@ func TestFunctionsListSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		GetAllFunctionsForApp("1").
@@ -49,7 +49,7 @@ func TestFunctionsListError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		GetAllFunctionsForApp("1").
@@ -69,7 +69,7 @@ func TestCreateSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		CreateFunction("1", "my-function", []string{"my-event"}, "my-code").
@@ -94,7 +94,7 @@ func TestCreateFailure(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		CreateFunction("1", "my-function", []string{"my-event"}, "my-code").
@@ -110,7 +110,7 @@ func TestCreateFailure(t *testing.T) {
 func TestCreateFileDoesNotExist(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	_, err := executeCommand([]string{"create", "code.js", "--app_id", "1", "--name", "my-function", "--events", "my-event"}, mockFunctionService, fstest.MapFS{})
 	if err == nil {
@@ -121,7 +121,7 @@ func TestCreateFileDoesNotExist(t *testing.T) {
 func TestCreateRequiredParams(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	params := [][]string{
 		{"--app_id", "1"},
@@ -150,7 +150,7 @@ func TestDeleteSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		DeleteFunction("1", "123").
@@ -172,7 +172,7 @@ func TestDeleteRequiredArgs(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	_, err := executeCommand([]string{"delete", "--app_id", "1"}, mockFunctionService, fstest.MapFS{})
 	if err == nil {
@@ -189,7 +189,7 @@ func TestDeleteFailure(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		DeleteFunction("1", "123").
@@ -206,7 +206,7 @@ func TestGetSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		GetFunction("1", "123").
@@ -228,7 +228,7 @@ func TestGetRequiredArgs(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	_, err := executeCommand([]string{"get", "--app_id", "1"}, mockFunctionService, fstest.MapFS{})
 	if err == nil {
@@ -245,7 +245,7 @@ func TestGetFailure(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		GetFunction("1", "123").
@@ -265,7 +265,7 @@ func TestUpdateSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		UpdateFunction("1", "456", "my-function", []string{"my-event"}, "my-code").
@@ -290,7 +290,7 @@ func TestUpdateFailure(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
 
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 	mockFunctionService.
 		EXPECT().
 		UpdateFunction("1", "456", "my-function", []string{"my-event"}, "my-code").
@@ -306,7 +306,7 @@ func TestUpdateFailure(t *testing.T) {
 func TestUpdateFileDoesNotExist(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	_, err := executeCommand([]string{"update", "456", "code.js", "--app_id", "1", "--name", "my-function", "--events", "my-event"}, mockFunctionService, fstest.MapFS{})
 	if err == nil {
@@ -317,7 +317,7 @@ func TestUpdateFileDoesNotExist(t *testing.T) {
 func TestUpdateRequiredParams(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	mockCtrl.Finish()
-	mockFunctionService := mocks.NewMockFunctionService(mockCtrl)
+	mockFunctionService := mock.NewMockFunctionService(mockCtrl)
 
 	params := [][]string{
 		{"--app_id", "1"},
