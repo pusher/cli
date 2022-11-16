@@ -1,3 +1,5 @@
+//go:generate mockgen -source function.go -destination mock/function_mock.go -package mock
+
 package api
 
 import (
@@ -14,6 +16,7 @@ type FunctionService interface {
 	DeleteFunction(appID string, functionID string) error
 	GetFunction(appID string, functionID string) (Function, error)
 	UpdateFunction(appID string, functionID string, name string, events []string, body string) (Function, error)
+	GetFunctionLogs(appID string, functionID string) (FunctionLogs, error)
 }
 
 type Function struct {
@@ -33,8 +36,19 @@ type FunctionRequestBodyFunction struct {
 	Body   string   `json:"body"`
 }
 
+type FunctionLogs struct {
+	Events []LogEvent `json:"events"`
+}
+
+type LogEvent struct {
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+}
+
 const FunctionsApiEndpoint = "/apps/%s/functions.json"
 const FunctionApiEndpoint = "/apps/%s/functions/%s.json"
+
+var internalErr = errors.New("Pusher encountered an error, please retry")
 
 func NewFunctionRequestBody(name string, events []string, body string) FunctionRequestBody {
 	return FunctionRequestBody{
@@ -77,10 +91,10 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 			case http.StatusUnprocessableEntity:
 				return Function{}, errors.New(response)
 			default:
-				return Function{}, errors.New("Pusher encountered an error, please retry")
+				return Function{}, internalErr
 			}
 		default:
-			return Function{}, errors.New("Pusher encountered an error, please retry")
+			return Function{}, internalErr
 		}
 	}
 
@@ -102,10 +116,10 @@ func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
 			case http.StatusNotFound:
 				return fmt.Errorf("Funciton with id: %s, could not be found", functionID)
 			default:
-				return errors.New("Pusher encountered an error, please retry")
+				return internalErr
 			}
 		default:
-			return errors.New("Pusher encountered an error, please retry")
+			return internalErr
 		}
 	}
 
@@ -121,10 +135,10 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 			if e.StatusCode == http.StatusNotFound {
 				return Function{}, errors.New("Function could not be found")
 			} else {
-				return Function{}, errors.New("Pusher encountered an error, please retry")
+				return Function{}, internalErr
 			}
 		default:
-			return Function{}, errors.New("Pusher encountered an error, please retry")
+			return Function{}, internalErr
 		}
 	}
 	function := Function{}
@@ -157,10 +171,10 @@ func (p *PusherApi) UpdateFunction(appID string, functionID string, name string,
 			if e.StatusCode == http.StatusUnprocessableEntity {
 				return Function{}, errors.New(response)
 			} else {
-				return Function{}, errors.New("Pusher encountered an error, please retry")
+				return Function{}, internalErr
 			}
 		default:
-			return Function{}, errors.New("Pusher encountered an error, please retry")
+			return Function{}, internalErr
 		}
 	}
 
@@ -170,4 +184,29 @@ func (p *PusherApi) UpdateFunction(appID string, functionID string, name string,
 		return Function{}, errors.New("Response from Pusher API was not valid json, please retry")
 	}
 	return function, nil
+}
+
+func (p *PusherApi) GetFunctionLogs(appID string, functionID string) (FunctionLogs, error) {
+	response, err := p.makeRequest("GET", fmt.Sprintf("/apps/%s/functions/%s/logs.json", appID, functionID), nil)
+	if err != nil {
+		switch err.(type) {
+		case *HttpStatusError:
+			e := err.(*HttpStatusError)
+			if e.StatusCode == http.StatusNotFound {
+				return FunctionLogs{}, errors.New("Function could not be found")
+			}
+
+			return FunctionLogs{}, internalErr
+		default:
+			return FunctionLogs{}, internalErr
+		}
+	}
+
+	logs := FunctionLogs{}
+	err = json.Unmarshal([]byte(response), &logs)
+	if err != nil {
+		return FunctionLogs{}, errors.New("Response from Pusher API was not valid json, please retry")
+	}
+
+	return logs, nil
 }
