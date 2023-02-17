@@ -13,9 +13,9 @@ type AppToken struct {
 
 const getTokensAPIEndpoint = "/apps/%s/tokens.json" // Interpolate with `appId`
 
-func GetAllTokensForApp(appId string) ([]AppToken, error) {
-	validateKeyOrDie()
-	response, err := makeRequest("GET", fmt.Sprintf(getTokensAPIEndpoint, appId), nil)
+func (p *PusherApi) GetAllTokensForApp(appId string) ([]AppToken, error) {
+	p.validateKeyOrDie()
+	response, err := p.makeRequest("GET", fmt.Sprintf(getTokensAPIEndpoint, appId), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +27,8 @@ func GetAllTokensForApp(appId string) ([]AppToken, error) {
 	return tokens, nil
 }
 
-func GetToken(appId string) (*AppToken, error) {
-	tokens, err := GetAllTokensForApp(appId)
+func (p *PusherApi) GetToken(appId string) (*AppToken, error) {
+	tokens, err := p.GetAllTokensForApp(appId)
 	if err != nil {
 		return nil, err
 	}
