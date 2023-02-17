@@ -16,6 +16,130 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func NewConfigListCommand(pusher api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List function configs for an Channels app",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configs, err := pusher.GetFunctionConfigsForApp(commands.AppID)
+			if err != nil {
+				return err
+			}
+
+			if commands.OutputAsJSON {
+				configsJSONBytes, _ := json.Marshal(configs)
+				cmd.Println(string(configsJSONBytes))
+			} else {
+				table := newTable(cmd.OutOrStdout())
+				table.SetHeader([]string{"Name", "Desciption", "Type"})
+				for _, config := range configs {
+					table.Append([]string{config.Name, config.Description, config.ParamType})
+				}
+				table.Render()
+			}
+			return nil
+		},
+	}
+	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
+	return cmd
+}
+
+func NewConfigCreateCommand(functionService api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create",
+		Short: "Create a function config for a Channels app",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			config, err := functionService.CreateFunctionConfig(commands.AppID, commands.FunctionConfigName, commands.FunctionConfigDescription, commands.FunctionConfigParamType, commands.FunctionConfigContent)
+			if err != nil {
+				return err
+			}
+
+			if commands.OutputAsJSON {
+				functionJSONBytes, _ := json.Marshal(config)
+				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
+			} else {
+				fmt.Fprintf(cmd.OutOrStdout(), "created function config %s", config.Name)
+			}
+			return nil
+		},
+	}
+	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
+	cmd.MarkPersistentFlagRequired("name")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigDescription, "description", "", "Function config description")
+	cmd.MarkPersistentFlagRequired("description")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigParamType, "type", "", "Function config type, valid options: param|secret")
+	cmd.MarkPersistentFlagRequired("type")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigContent, "content", "", "Function config contents")
+	cmd.MarkPersistentFlagRequired("contents")
+	return cmd
+}
+
+func NewConfigUpdateCommand(functionService api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update a function config for a Channels app",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			config, err := functionService.UpdateFunctionConfig(commands.AppID, commands.FunctionConfigName, commands.FunctionConfigDescription, commands.FunctionConfigContent)
+			if err != nil {
+				return err
+			}
+
+			if commands.OutputAsJSON {
+				functionJSONBytes, _ := json.Marshal(config)
+				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
+			} else {
+				fmt.Fprintf(cmd.OutOrStdout(), "updated function config %s", config.Name)
+			}
+			return nil
+		},
+	}
+	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
+	cmd.MarkPersistentFlagRequired("name")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigDescription, "description", "", "Function config description")
+	cmd.MarkPersistentFlagRequired("description")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigContent, "content", "", "Function config contents")
+	cmd.MarkPersistentFlagRequired("contents")
+	return cmd
+}
+
+func NewConfigDeleteCommand(functionService api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete",
+		Short: "Delete a function config from a Channels app",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			err := functionService.DeleteFunctionConfig(commands.AppID, commands.FunctionConfigName)
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "deleted function config %s\n", commands.FunctionConfigName)
+			return nil
+		},
+	}
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
+	cmd.MarkPersistentFlagRequired("name")
+	return cmd
+}
+
+func NewConfigCommand(pusher api.FunctionService) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "configs",
+		Short: "Manage function config params for a Channels app",
+		Args:  cobra.NoArgs,
+	}
+	cmd.AddCommand(NewConfigListCommand(pusher))
+	cmd.AddCommand(NewConfigCreateCommand(pusher))
+	cmd.AddCommand(NewConfigUpdateCommand(pusher))
+	cmd.AddCommand(NewConfigDeleteCommand(pusher))
+	return cmd
+}
+
 func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "functions",
@@ -30,6 +154,7 @@ func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) *cobra.Co
 	cmd.AddCommand(NewFunctionGetCommand(pusher))
 	cmd.AddCommand(NewFunctionsUpdateCommand(pusher, fs))
 	cmd.AddCommand(NewFunctionGetLogsCommand(pusher))
+	cmd.AddCommand(NewConfigCommand(pusher))
 	return cmd
 }
 

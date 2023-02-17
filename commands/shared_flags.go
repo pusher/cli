@@ -10,3 +10,7 @@ var FetchUserCount bool
 var FetchSubscriptionCount bool
 var FunctionName string
 var FunctionEvents []string
+var FunctionConfigName string
+var FunctionConfigDescription string
+var FunctionConfigParamType string
+var FunctionConfigContent string
