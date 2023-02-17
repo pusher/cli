@@ -124,9 +124,8 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 	}
 	response, err := p.makeRequest("POST", fmt.Sprintf(FunctionsApiEndpoint, appID), requestJson)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			switch e.StatusCode {
 			case http.StatusUnprocessableEntity:
 				return Function{}, errors.New(response)
@@ -149,9 +148,8 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
 	_, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			switch e.StatusCode {
 			case http.StatusNotFound:
 				return fmt.Errorf("Function with id: %s, could not be found", functionID)
@@ -169,9 +167,8 @@ func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
 func (p *PusherApi) GetFunction(appID string, functionID string) (Function, error) {
 	response, err := p.makeRequest("GET", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			if e.StatusCode == http.StatusNotFound {
 				return Function{}, errors.New("Function could not be found")
 			} else {
@@ -205,9 +202,8 @@ func (p *PusherApi) UpdateFunction(appID string, functionID string, name string,
 	}
 	response, err := p.makeRequest("PUT", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), requestJson)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			if e.StatusCode == http.StatusUnprocessableEntity {
 				return Function{}, errors.New(response)
 			} else {
@@ -229,9 +225,8 @@ func (p *PusherApi) UpdateFunction(appID string, functionID string, name string,
 func (p *PusherApi) GetFunctionLogs(appID string, functionID string) (FunctionLogs, error) {
 	response, err := p.makeRequest("GET", fmt.Sprintf("/apps/%s/functions/%s/logs.json", appID, functionID), nil)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			if e.StatusCode == http.StatusNotFound {
 				return FunctionLogs{}, errors.New("Function could not be found")
 			}
@@ -273,9 +268,8 @@ func (p *PusherApi) CreateFunctionConfig(appID string, name string, description 
 	}
 	response, err := p.makeRequest("POST", fmt.Sprintf(FunctionConfigsApiEndpoint, appID), requestJson)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			switch e.StatusCode {
 			case http.StatusUnprocessableEntity:
 				return FunctionConfig{}, errors.New(response)
@@ -304,9 +298,8 @@ func (p *PusherApi) UpdateFunctionConfig(appID string, name string, description 
 	}
 	response, err := p.makeRequest("PUT", fmt.Sprintf(FunctionConfigApiEndpoint, appID, name), requestJson)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			switch e.StatusCode {
 			case http.StatusUnprocessableEntity:
 				return FunctionConfig{}, errors.New(response)
@@ -329,9 +322,8 @@ func (p *PusherApi) UpdateFunctionConfig(appID string, name string, description 
 func (p *PusherApi) DeleteFunctionConfig(appID string, name string) error {
 	_, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionConfigApiEndpoint, appID, name), nil)
 	if err != nil {
-		switch err.(type) {
+		switch e := err.(type) {
 		case *HttpStatusError:
-			e := err.(*HttpStatusError)
 			switch e.StatusCode {
 			case http.StatusNotFound:
 				return fmt.Errorf("Function config with name: %s, could not be found", name)

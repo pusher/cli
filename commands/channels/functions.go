@@ -45,7 +45,7 @@ func NewConfigListCommand(pusher api.FunctionService) *cobra.Command {
 	return cmd
 }
 
-func NewConfigCreateCommand(functionService api.FunctionService) *cobra.Command {
+func NewConfigCreateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a function config for a Channels app",
@@ -67,17 +67,29 @@ func NewConfigCreateCommand(functionService api.FunctionService) *cobra.Command 
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
-	cmd.MarkPersistentFlagRequired("name")
+	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigDescription, "description", "", "Function config description")
-	cmd.MarkPersistentFlagRequired("description")
+	err = cmd.MarkPersistentFlagRequired("description")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigParamType, "type", "", "Function config type, valid options: param|secret")
-	cmd.MarkPersistentFlagRequired("type")
+	err = cmd.MarkPersistentFlagRequired("type")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigContent, "content", "", "Function config contents")
-	cmd.MarkPersistentFlagRequired("contents")
-	return cmd
+	err = cmd.MarkPersistentFlagRequired("content")
+	if err != nil {
+		return nil, err
+	}
+	return cmd, nil
 }
 
-func NewConfigUpdateCommand(functionService api.FunctionService) *cobra.Command {
+func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a function config for a Channels app",
@@ -99,15 +111,24 @@ func NewConfigUpdateCommand(functionService api.FunctionService) *cobra.Command 
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
-	cmd.MarkPersistentFlagRequired("name")
+	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigDescription, "description", "", "Function config description")
-	cmd.MarkPersistentFlagRequired("description")
+	err = cmd.MarkPersistentFlagRequired("description")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigContent, "content", "", "Function config contents")
-	cmd.MarkPersistentFlagRequired("contents")
-	return cmd
+	err = cmd.MarkPersistentFlagRequired("content")
+	if err != nil {
+		return nil, err
+	}
+	return cmd, nil
 }
 
-func NewConfigDeleteCommand(functionService api.FunctionService) *cobra.Command {
+func NewConfigDeleteCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a function config from a Channels app",
@@ -123,39 +144,70 @@ func NewConfigDeleteCommand(functionService api.FunctionService) *cobra.Command 
 		},
 	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
-	cmd.MarkPersistentFlagRequired("name")
-	return cmd
+	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
+	return cmd, nil
 }
 
-func NewConfigCommand(pusher api.FunctionService) *cobra.Command {
+func NewConfigCommand(pusher api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "configs",
 		Short: "Manage function config params for a Channels app",
 		Args:  cobra.NoArgs,
 	}
 	cmd.AddCommand(NewConfigListCommand(pusher))
-	cmd.AddCommand(NewConfigCreateCommand(pusher))
-	cmd.AddCommand(NewConfigUpdateCommand(pusher))
-	cmd.AddCommand(NewConfigDeleteCommand(pusher))
-	return cmd
+	c, err := NewConfigCreateCommand(pusher)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
+	c, err = NewConfigUpdateCommand(pusher)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
+	c, err = NewConfigDeleteCommand(pusher)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
+	return cmd, nil
 }
 
-func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) *cobra.Command {
+func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "functions",
 		Short: "Manage functions for a Channels app",
 		Args:  cobra.NoArgs,
 	}
 	cmd.PersistentFlags().StringVar(&commands.AppID, "app_id", "", "Channels App ID")
-	cmd.MarkPersistentFlagRequired("app_id")
+	err := cmd.MarkPersistentFlagRequired("app_id")
+	if err != nil {
+		return nil, err
+	}
 	cmd.AddCommand(NewFunctionsListCommand(pusher))
-	cmd.AddCommand(NewFunctionsCreateCommand(pusher, fs))
+
+	c, err := NewFunctionsCreateCommand(pusher, fs)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
 	cmd.AddCommand(NewFunctionDeleteCommand(pusher))
 	cmd.AddCommand(NewFunctionGetCommand(pusher))
-	cmd.AddCommand(NewFunctionsUpdateCommand(pusher, fs))
+	c, err = NewFunctionsUpdateCommand(pusher, fs)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
 	cmd.AddCommand(NewFunctionGetLogsCommand(pusher))
-	cmd.AddCommand(NewConfigCommand(pusher))
-	return cmd
+	c, err = NewConfigCommand(pusher)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
+	return cmd, nil
 }
 
 var Functions = &cobra.Command{
@@ -204,7 +256,7 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 	return cmd
 }
 
-func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFileFS) *cobra.Command {
+func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "create <path to code file>",
 		Short: "Create a function for a Channels app",
@@ -231,9 +283,12 @@ func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFi
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionName, "name", "", "Function name")
-	cmd.MarkPersistentFlagRequired("name")
+	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", []string{}, "Channel events that trigger this function")
-	return cmd
+	return cmd, err
 }
 
 func NewFunctionDeleteCommand(functionService api.FunctionService) *cobra.Command {
@@ -281,7 +336,7 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 	return cmd
 }
 
-func NewFunctionsUpdateCommand(functionService api.FunctionService, fs fs.ReadFileFS) *cobra.Command {
+func NewFunctionsUpdateCommand(functionService api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "update <function_id> <path to code file>",
 		Short: "Update a function for a Channels app",
@@ -309,9 +364,12 @@ func NewFunctionsUpdateCommand(functionService api.FunctionService, fs fs.ReadFi
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionName, "name", "", "Function name")
-	cmd.MarkPersistentFlagRequired("name")
+	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
 	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", []string{}, "Channel events that trigger this function")
-	return cmd
+	return cmd, nil
 }
 
 func NewFunctionGetLogsCommand(functionService api.FunctionService) *cobra.Command {
