@@ -24,7 +24,13 @@ func main() {
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
-	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo, channels.NewFunctionsCommand(api.NewPusherApi(), osFS{}))
+	funcCmd, err := channels.NewFunctionsCommand(api.NewPusherApi(), osFS{})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
+		os.Exit(1)
+		return
+	}
+	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo, funcCmd)
 
 	var Generate = &cobra.Command{Use: "generate",
 		Short: "Generate a Channels client, server, or Authorisation server"}
@@ -37,7 +43,7 @@ func main() {
 	rootCmd.AddCommand(Channels)
 	rootCmd.AddCommand(auth.Login, auth.Logout)
 	rootCmd.AddCommand(cli.Version)
-	err := rootCmd.Execute()
+	err = rootCmd.Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
 		os.Exit(1)
