@@ -267,7 +267,7 @@ func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFi
 				return fmt.Errorf("could not create function: %s does not exist", args[0])
 			}
 
-			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, string(code))
+			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, string(code), commands.FunctionMode)
 			if err != nil {
 				return err
 			}
@@ -284,6 +284,11 @@ func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFi
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionName, "name", "", "Function name")
 	err := cmd.MarkPersistentFlagRequired("name")
+	if err != nil {
+		return nil, err
+	}
+	cmd.PersistentFlags().StringVar(&commands.FunctionMode, "mode", "", "Function mode. Either synchronous or asynchronous")
+	err = cmd.MarkPersistentFlagRequired("mode")
 	if err != nil {
 		return nil, err
 	}
