@@ -14,3 +14,4 @@ var FunctionConfigName string
 var FunctionConfigDescription string
 var FunctionConfigParamType string
 var FunctionConfigContent string
+var FunctionMode string

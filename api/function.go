@@ -12,7 +12,7 @@ import (
 
 type FunctionService interface {
 	GetAllFunctionsForApp(name string) ([]Function, error)
-	CreateFunction(appID string, name string, events []string, body string) (Function, error)
+	CreateFunction(appID string, name string, events []string, body string, mode string) (Function, error)
 	DeleteFunction(appID string, functionID string) error
 	GetFunction(appID string, functionID string) (Function, error)
 	UpdateFunction(appID string, functionID string, name string, events []string, body string) (Function, error)
@@ -44,6 +44,7 @@ type FunctionRequestBodyFunction struct {
 	Name   string   `json:"name"`
 	Events []string `json:"events"`
 	Body   string   `json:"body"`
+	Mode   string   `json:"mode,omitempty"`
 }
 
 type CreateFunctionConfigRequest struct {
@@ -74,7 +75,18 @@ const FunctionConfigApiEndpoint = "/apps/%s/function_configs/%s.json"
 
 var internalErr = errors.New("Pusher encountered an error, please retry")
 
-func NewFunctionRequestBody(name string, events []string, body string) FunctionRequestBody {
+func NewCreateFunctionRequestBody(name string, events []string, body string, mode string) FunctionRequestBody {
+	return FunctionRequestBody{
+		Function: FunctionRequestBodyFunction{
+			Name:   name,
+			Events: events,
+			Body:   body,
+			Mode:   mode,
+		},
+	}
+}
+
+func NewUpdateFunctionRequestBody(name string, events []string, body string) FunctionRequestBody {
 	return FunctionRequestBody{
 		Function: FunctionRequestBodyFunction{
 			Name:   name,
@@ -103,6 +115,7 @@ func NewUpdateFunctionConfigRequest(description string, content string) UpdateFu
 func (p *PusherApi) GetAllFunctionsForApp(appID string) ([]Function, error) {
 	response, err := p.makeRequest("GET", fmt.Sprintf(FunctionsApiEndpoint, appID), nil)
 	if err != nil {
+		fmt.Printf("%v\n", err)
 		return nil, errors.New("that app ID wasn't recognised as linked to your account")
 	}
 	functions := []Function{}
@@ -113,10 +126,10 @@ func (p *PusherApi) GetAllFunctionsForApp(appID string) ([]Function, error) {
 	return functions, nil
 }
 
-func (p *PusherApi) CreateFunction(appID string, name string, events []string, body string) (Function, error) {
+func (p *PusherApi) CreateFunction(appID string, name string, events []string, body string, mode string) (Function, error) {
 	encoded := base64.StdEncoding.EncodeToString([]byte(body))
 
-	request := NewFunctionRequestBody(name, events, encoded)
+	request := NewCreateFunctionRequestBody(name, events, encoded, mode)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
@@ -194,7 +207,7 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 func (p *PusherApi) UpdateFunction(appID string, functionID string, name string, events []string, body string) (Function, error) {
 	encoded := base64.StdEncoding.EncodeToString([]byte(body))
 
-	request := NewFunctionRequestBody(name, events, encoded)
+	request := NewUpdateFunctionRequestBody(name, events, encoded)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
