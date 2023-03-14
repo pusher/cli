@@ -182,8 +182,8 @@ func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) (*cobra.C
 		Short: "Manage functions for a Channels app",
 		Args:  cobra.NoArgs,
 	}
-	cmd.PersistentFlags().StringVar(&commands.AppID, "app_id", "", "Channels App ID")
-	err := cmd.MarkPersistentFlagRequired("app_id")
+	cmd.PersistentFlags().StringVar(&commands.AppID, "app-id", "", "Channels App ID")
+	err := cmd.MarkPersistentFlagRequired("app-id")
 	if err != nil {
 		return nil, err
 	}
