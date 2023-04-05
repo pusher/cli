@@ -10,14 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//GenerateServer generates a server app that can trigger events on a particular Pusher app.
+// GenerateServer generates a server app that can trigger events on a particular Pusher app.
 var GenerateServer = &cobra.Command{
 	Use:   "server",
 	Short: "Generate a server for your Channels app",
 	Args:  cobra.NoArgs,
 }
 
-//GeneratePhp generates a PHP app that can trigger events on a particular Pusher app.
+// GeneratePhp generates a PHP app that can trigger events on a particular Pusher app.
 var GeneratePhp = &cobra.Command{
 	Use:   "php",
 	Short: "Generate a PHP server for your Channels app",
@@ -32,7 +32,7 @@ var GeneratePhp = &cobra.Command{
 		p := api.NewPusherApi()
 		app, err := p.GetApp(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
@@ -48,7 +48,7 @@ var GeneratePhp = &cobra.Command{
 			require __DIR__ . '/vendor/autoload.php';
 			
 			$options = array(
-				'host' => 'api-` + app.Cluster + `.pusher.com',
+				'host' => '` + apiHost(app.Cluster) + `',
 				'encrypted' => true
 			);
 			
@@ -67,7 +67,7 @@ var GeneratePhp = &cobra.Command{
 	},
 }
 
-//GeneratePython generates a Python app that can trigger events on a particular Pusher app.
+// GeneratePython generates a Python app that can trigger events on a particular Pusher app.
 var GeneratePython = &cobra.Command{
 	Use:   "python",
 	Short: "Generate a Python server for your Channels app",
@@ -82,7 +82,7 @@ var GeneratePython = &cobra.Command{
 		p := api.NewPusherApi()
 		app, err := p.GetApp(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
@@ -98,7 +98,7 @@ var GeneratePython = &cobra.Command{
 		pusher_client = pusher.Pusher(app_id='` + commands.AppID + `',
 			key='` + token.Key + `', 
 			secret='` + token.Secret + `',
-			host='api-` + app.Cluster + `.pusher.com',
+			host='` + apiHost(app.Cluster) + `',
 			ssl=True
 		)
 		

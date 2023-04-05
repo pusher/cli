@@ -33,7 +33,7 @@ var Subscribe = &cobra.Command{
 		p := api.NewPusherApi()
 		app, err := p.GetApp(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
@@ -48,7 +48,7 @@ var Subscribe = &cobra.Command{
 		pusher.New(token.Key)
 		client := pusher.NewWithConfig(pusher.ClientConfig{
 			Scheme: "wss",
-			Host:   "ws-" + app.Cluster + ".pusher.com",
+			Host:   wsHost(app.Cluster),
 			Port:   "443",
 			Key:    token.Key,
 			Secret: token.Secret,
