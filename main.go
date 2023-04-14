@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 
 	"github.com/pusher/cli/api"
@@ -13,18 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type osFS struct{}
-
-func (osFS) Open(name string) (fs.File, error)    { return os.Open(name) }
-func (osFS) ReadFile(name string) ([]byte, error) { return os.ReadFile(name) }
-
 func main() {
 	config.Init()
 	var rootCmd = &cobra.Command{Use: "pusher", Short: "A CLI for your Pusher account. Find out more at https://pusher.com"}
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
-	funcCmd, err := channels.NewFunctionsCommand(api.NewPusherApi(), osFS{})
+	funcCmd, err := channels.NewFunctionsCommand(api.NewPusherApi())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
 		os.Exit(1)

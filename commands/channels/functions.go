@@ -1,9 +1,12 @@
 package channels
 
 import (
+	"archive/zip"
 	"fmt"
 	"io"
-	"io/fs"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -60,7 +63,7 @@ func NewConfigCreateCommand(functionService api.FunctionService) (*cobra.Command
 				functionJSONBytes, _ := json.Marshal(config)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "created function config %s", config.Name)
+				fmt.Fprintf(cmd.OutOrStdout(), "created function config %s\n", config.Name)
 			}
 			return nil
 		},
@@ -104,7 +107,7 @@ func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command
 				functionJSONBytes, _ := json.Marshal(config)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "updated function config %s", config.Name)
+				fmt.Fprintf(cmd.OutOrStdout(), "updated function config %s\n", config.Name)
 			}
 			return nil
 		},
@@ -176,7 +179,7 @@ func NewConfigCommand(pusher api.FunctionService) (*cobra.Command, error) {
 	return cmd, nil
 }
 
-func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
+func NewFunctionsCommand(pusher api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "functions",
 		Short: "Manage functions for a Channels app",
@@ -189,14 +192,14 @@ func NewFunctionsCommand(pusher api.FunctionService, fs fs.ReadFileFS) (*cobra.C
 	}
 	cmd.AddCommand(NewFunctionsListCommand(pusher))
 
-	c, err := NewFunctionsCreateCommand(pusher, fs)
+	c, err := NewFunctionsCreateCommand(pusher)
 	if err != nil {
 		return nil, err
 	}
 	cmd.AddCommand(c)
 	cmd.AddCommand(NewFunctionDeleteCommand(pusher))
 	cmd.AddCommand(NewFunctionGetCommand(pusher))
-	c, err = NewFunctionsUpdateCommand(pusher, fs)
+	c, err = NewFunctionsUpdateCommand(pusher)
 	if err != nil {
 		return nil, err
 	}
@@ -256,18 +259,15 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 	return cmd
 }
 
-func NewFunctionsCreateCommand(functionService api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
+func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "create <path to code file>",
+		Use:   "create <path to code directory>",
 		Short: "Create a function for a Channels app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			code, err := fs.ReadFile(args[0])
-			if err != nil {
-				return fmt.Errorf("could not create function: %s does not exist", args[0])
-			}
+			archive := ZipFolder(args[0])
 
-			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, string(code), commands.FunctionMode)
+			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, archive, commands.FunctionMode)
 			if err != nil {
 				return err
 			}
@@ -317,7 +317,7 @@ func NewFunctionDeleteCommand(functionService api.FunctionService) *cobra.Comman
 func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get <function_id>",
-		Short: "Get a function for a Channels app",
+		Short: "Downloads a function from a Channels app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fn, err := functionService.GetFunction(commands.AppID, args[0])
@@ -329,10 +329,15 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 				functionsJSONBytes, _ := json.Marshal(fn)
 				cmd.Println(string(functionsJSONBytes))
 			} else {
+				zipFileName := fmt.Sprintf("%s.%s.zip", fn.Name, time.Now().Format("2006-01-02-150405"))
 				fmt.Fprintf(cmd.OutOrStdout(), "ID: %v\n", fn.ID)
 				fmt.Fprintf(cmd.OutOrStdout(), "Name: %v\n", fn.Name)
 				fmt.Fprintf(cmd.OutOrStdout(), "Events: %v\n", strings.Join(fn.Events, ","))
-				fmt.Fprintf(cmd.OutOrStdout(), "Body: %v\n", fn.Body)
+				err = os.WriteFile(zipFileName, fn.Body, 0644)
+				if err != nil {
+					return err
+				}
+				fmt.Fprintf(cmd.OutOrStdout(), "Body: '%v'\n", zipFileName)
 			}
 			return nil
 		},
@@ -341,19 +346,15 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 	return cmd
 }
 
-func NewFunctionsUpdateCommand(functionService api.FunctionService, fs fs.ReadFileFS) (*cobra.Command, error) {
+func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "update <function_id> <path to code file>",
+		Use:   "update <function_id> <path to code directory>",
 		Short: "Update a function for a Channels app",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			filePath := args[1]
-			code, err := fs.ReadFile(filePath)
-			if err != nil {
-				return fmt.Errorf("could not update function: %s does not exist", filePath)
-			}
+			archive := ZipFolder(args[1])
 
-			function, err := functionService.UpdateFunction(commands.AppID, args[0], commands.FunctionName, commands.FunctionEvents, string(code))
+			function, err := functionService.UpdateFunction(commands.AppID, args[0], commands.FunctionName, commands.FunctionEvents, archive)
 			if err != nil {
 				return err
 			}
@@ -407,4 +408,62 @@ func NewFunctionGetLogsCommand(functionService api.FunctionService) *cobra.Comma
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 
 	return cmd
+}
+
+func ZipFolder(baseFolder string) io.Reader {
+	r, w := io.Pipe()
+
+	go func() {
+		// Create a new zip archive.
+		zw := zip.NewWriter(w)
+
+		// Recursively add files to the archive.
+		err := addFiles(zw, baseFolder, "")
+
+		// Close the archive and pipeline, reporting any errors.
+		if err != nil {
+			zw.Close()
+		} else {
+			err = zw.Close()
+		}
+		w.CloseWithError(err)
+	}()
+
+	return r
+}
+
+func addFiles(w *zip.Writer, basePath, baseInZip string) error {
+	// Open the Directory.
+	files, err := ioutil.ReadDir(basePath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			dat, err := ioutil.ReadFile(filepath.Join(basePath, file.Name()))
+			if err != nil {
+				return err
+			}
+
+			// Add some files to the archive.
+			f, err := w.Create(filepath.Join(baseInZip, file.Name()))
+			if err != nil {
+				return err
+			}
+			_, err = f.Write(dat)
+			if err != nil {
+				return err
+			}
+		} else if file.IsDir() {
+
+			// Recurse.
+			newBase := filepath.Join(basePath, file.Name())
+			err = addFiles(w, newBase, filepath.Join(baseInZip, file.Name()))
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

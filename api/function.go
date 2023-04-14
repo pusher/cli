@@ -3,19 +3,19 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
 
 type FunctionService interface {
 	GetAllFunctionsForApp(name string) ([]Function, error)
-	CreateFunction(appID string, name string, events []string, body string, mode string) (Function, error)
+	CreateFunction(appID string, name string, events []string, body io.Reader, mode string) (Function, error)
 	DeleteFunction(appID string, functionID string) error
 	GetFunction(appID string, functionID string) (Function, error)
-	UpdateFunction(appID string, functionID string, name string, events []string, body string) (Function, error)
+	UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader) (Function, error)
 	GetFunctionLogs(appID string, functionID string) (FunctionLogs, error)
 	GetFunctionConfigsForApp(appID string) ([]FunctionConfig, error)
 	CreateFunctionConfig(appID string, name string, description string, paramType string, content string) (FunctionConfig, error)
@@ -27,7 +27,7 @@ type Function struct {
 	ID     int      `json:"id"`
 	Name   string   `json:"name"`
 	Events []string `json:"events"`
-	Body   string   `json:"body"`
+	Body   []byte   `json:"body"`
 }
 
 type FunctionConfig struct {
@@ -43,7 +43,7 @@ type FunctionRequestBody struct {
 type FunctionRequestBodyFunction struct {
 	Name   string   `json:"name"`
 	Events []string `json:"events"`
-	Body   string   `json:"body"`
+	Body   []byte   `json:"body"`
 	Mode   string   `json:"mode,omitempty"`
 }
 
@@ -75,7 +75,7 @@ const FunctionConfigApiEndpoint = "/apps/%s/function_configs/%s.json"
 
 var internalErr = errors.New("Pusher encountered an error, please retry")
 
-func NewCreateFunctionRequestBody(name string, events []string, body string, mode string) FunctionRequestBody {
+func NewCreateFunctionRequestBody(name string, events []string, body []byte, mode string) FunctionRequestBody {
 	return FunctionRequestBody{
 		Function: FunctionRequestBodyFunction{
 			Name:   name,
@@ -86,7 +86,7 @@ func NewCreateFunctionRequestBody(name string, events []string, body string, mod
 	}
 }
 
-func NewUpdateFunctionRequestBody(name string, events []string, body string) FunctionRequestBody {
+func NewUpdateFunctionRequestBody(name string, events []string, body []byte) FunctionRequestBody {
 	return FunctionRequestBody{
 		Function: FunctionRequestBodyFunction{
 			Name:   name,
@@ -126,14 +126,16 @@ func (p *PusherApi) GetAllFunctionsForApp(appID string) ([]Function, error) {
 	return functions, nil
 }
 
-func (p *PusherApi) CreateFunction(appID string, name string, events []string, body string, mode string) (Function, error) {
-	encoded := base64.StdEncoding.EncodeToString([]byte(body))
-
-	request := NewCreateFunctionRequestBody(name, events, encoded, mode)
+func (p *PusherApi) CreateFunction(appID string, name string, events []string, body io.Reader, mode string) (Function, error) {
+	bodyBytes, err := io.ReadAll(body)
+	if err != nil {
+		return Function{}, fmt.Errorf("could not create function archive: %w", err)
+	}
+	request := NewCreateFunctionRequestBody(name, events, bodyBytes, mode)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
-		return Function{}, errors.New("Could not create function")
+		return Function{}, fmt.Errorf("could not serialize function: %w", err)
 	}
 	response, err := p.makeRequest("POST", fmt.Sprintf(FunctionsApiEndpoint, appID), requestJson)
 	if err != nil {
@@ -196,22 +198,19 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 	if err != nil {
 		return Function{}, errors.New("Response from Pusher API was not valid json, please retry")
 	}
-	decodedBody, err := base64.StdEncoding.DecodeString(function.Body)
-	if err != nil {
-		return Function{}, errors.New("Response from Pusher API did not include a valid function Body, please retry")
-	}
-	function.Body = string(decodedBody)
 	return function, nil
 }
 
-func (p *PusherApi) UpdateFunction(appID string, functionID string, name string, events []string, body string) (Function, error) {
-	encoded := base64.StdEncoding.EncodeToString([]byte(body))
-
-	request := NewUpdateFunctionRequestBody(name, events, encoded)
+func (p *PusherApi) UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader) (Function, error) {
+	bodyBytes, err := io.ReadAll(body)
+	if err != nil {
+		return Function{}, fmt.Errorf("could not create function archive: %w", err)
+	}
+	request := NewUpdateFunctionRequestBody(name, events, bodyBytes)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
-		return Function{}, errors.New("Could not serialize function")
+		return Function{}, fmt.Errorf("could not serialize function: %w", err)
 	}
 	response, err := p.makeRequest("PUT", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), requestJson)
 	if err != nil {

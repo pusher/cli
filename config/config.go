@@ -36,7 +36,7 @@ func getConfigPath() string {
 	return path.Join(getConfigDir(), "pusher.json")
 }
 
-//Init sets the config files location and attempts to read it in.
+// Init sets the config files location and attempts to read it in.
 func Init() {
 	if _, err := os.Stat(getConfigDir()); os.IsNotExist(err) {
 		err = os.Mkdir(getConfigDir(), os.ModeDir|0755)
