@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -248,7 +247,7 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 				table := newTable(cmd.OutOrStdout())
 				table.SetHeader([]string{"ID", "Name", "Events"})
 				for _, function := range functions {
-					table.Append([]string{strconv.Itoa(function.ID), function.Name, strings.Join(function.Events, ",")})
+					table.Append([]string{function.ID, function.Name, strings.Join(function.Events, ",")})
 				}
 				table.Render()
 			}
@@ -276,7 +275,7 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 				functionJSONBytes, _ := json.Marshal(function)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "created function %s with id: %d\n", function.Name, function.ID)
+				fmt.Fprintf(cmd.OutOrStdout(), "created function %s with id: %v\n", function.Name, function.ID)
 			}
 			return nil
 		},
@@ -363,7 +362,7 @@ func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Comm
 				functionJSONBytes, _ := json.Marshal(function)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "updated function: %d\n", function.ID)
+				fmt.Fprintf(cmd.OutOrStdout(), "updated function: %v\n", function.ID)
 			}
 			return nil
 		},

@@ -24,7 +24,7 @@ type FunctionService interface {
 }
 
 type Function struct {
-	ID     int      `json:"id"`
+	ID     string   `json:"id"`
 	Name   string   `json:"name"`
 	Events []string `json:"events"`
 	Body   []byte   `json:"body"`
