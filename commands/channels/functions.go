@@ -204,6 +204,11 @@ func NewFunctionsCommand(pusher api.FunctionService) (*cobra.Command, error) {
 	}
 	cmd.AddCommand(c)
 	cmd.AddCommand(NewFunctionGetLogsCommand(pusher))
+	c, err = NewFunctionInvokeCommand(pusher)
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(c)
 	c, err = NewConfigCommand(pusher)
 	if err != nil {
 		return nil, err
@@ -311,6 +316,39 @@ func NewFunctionDeleteCommand(functionService api.FunctionService) *cobra.Comman
 		},
 	}
 	return cmd
+}
+
+func NewFunctionInvokeCommand(functionService api.FunctionService) (*cobra.Command, error) {
+	cmd := &cobra.Command{
+		Use:   "invoke <function_id>",
+		Short: "invoke a function to test it",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			result, err := functionService.InvokeFunction(commands.AppID, args[0], commands.Data, commands.EventName, commands.ChannelName)
+			if err != nil {
+				return err
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "%v\n", result)
+			return nil
+		},
+	}
+	cmd.PersistentFlags().StringVar(&commands.Data, "data", "", "Channels event data")
+	err := cmd.MarkPersistentFlagRequired("data")
+	if err != nil {
+		return nil, err
+	}
+	cmd.PersistentFlags().StringVar(&commands.EventName, "event", "", "Channels event name")
+	err = cmd.MarkPersistentFlagRequired("event")
+	if err != nil {
+		return nil, err
+	}
+	cmd.PersistentFlags().StringVar(&commands.ChannelName, "channel", "", "Channels name")
+	err = cmd.MarkPersistentFlagRequired("channel")
+	if err != nil {
+		return nil, err
+	}
+	return cmd, nil
 }
 
 func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
