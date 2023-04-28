@@ -21,6 +21,7 @@ type FunctionService interface {
 	CreateFunctionConfig(appID string, name string, description string, paramType string, content string) (FunctionConfig, error)
 	UpdateFunctionConfig(appID string, name string, description string, content string) (FunctionConfig, error)
 	DeleteFunctionConfig(appID string, name string) error
+	InvokeFunction(appID string, functionId string, data string, event string, channel string) (string, error)
 }
 
 type Function struct {
@@ -45,6 +46,12 @@ type FunctionRequestBodyFunction struct {
 	Events []string `json:"events"`
 	Body   []byte   `json:"body"`
 	Mode   string   `json:"mode,omitempty"`
+}
+
+type InvokeFunctionRequest struct {
+	Data    string `json:"data"`
+	Event   string `json:"event"`
+	Channel string `json:"channel"`
 }
 
 type CreateFunctionConfigRequest struct {
@@ -232,6 +239,30 @@ func (p *PusherApi) UpdateFunction(appID string, functionID string, name string,
 		return Function{}, errors.New("Response from Pusher API was not valid json, please retry")
 	}
 	return function, nil
+}
+
+func (p *PusherApi) InvokeFunction(appID string, functionID string, data string, event string, channel string) (string, error) {
+	request := InvokeFunctionRequest{Data: data, Event: event, Channel: channel}
+
+	requestJson, err := json.Marshal(&request)
+	if err != nil {
+		return "", fmt.Errorf("could not serialize function: %w", err)
+	}
+	response, err := p.makeRequest("POST", fmt.Sprintf("/apps/%s/functions/%s/invoke.json", appID, functionID), requestJson)
+	if err != nil {
+		switch e := err.(type) {
+		case *HttpStatusError:
+			if e.StatusCode == http.StatusNotFound {
+				return "", errors.New("Function could not be found")
+			}
+
+			return "", internalErr
+		default:
+			return "", internalErr
+		}
+	}
+
+	return response, nil
 }
 
 func (p *PusherApi) GetFunctionLogs(appID string, functionID string) (FunctionLogs, error) {
