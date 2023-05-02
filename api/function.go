@@ -82,6 +82,7 @@ const FunctionConfigsApiEndpoint = "/apps/%s/function_configs.json"
 const FunctionConfigApiEndpoint = "/apps/%s/function_configs/%s.json"
 
 var internalErr = errors.New("Pusher encountered an error, please retry")
+var unauthorisedErr = errors.New("that app ID wasn't recognised as linked to your account")
 
 func NewCreateFunctionRequestBody(name string, events *[]string, body []byte, mode string) FunctionRequestBody {
 	return FunctionRequestBody{
@@ -123,10 +124,21 @@ func NewUpdateFunctionConfigRequest(description string, content string) UpdateFu
 
 func (p *PusherApi) GetAllFunctionsForApp(appID string) ([]Function, error) {
 	response, err := p.makeRequest("GET", fmt.Sprintf(FunctionsApiEndpoint, appID), nil)
+
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		return nil, errors.New("that app ID wasn't recognised as linked to your account")
+		switch e := err.(type) {
+		case *HttpStatusError:
+			switch e.StatusCode {
+			case http.StatusForbidden:
+				return nil, errors.New(response)
+			default:
+				return nil, unauthorisedErr
+			}
+		default:
+			return nil, internalErr
+		}
 	}
+
 	functions := []Function{}
 	err = json.Unmarshal([]byte(response), &functions)
 	if err != nil {
@@ -152,17 +164,24 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 	if err != nil {
 		return Function{}, fmt.Errorf("could not serialize function: %w", err)
 	}
+
 	response, err := p.makeRequest("POST", fmt.Sprintf(FunctionsApiEndpoint, appID), requestJson)
+
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
 			switch e.StatusCode {
-			case http.StatusUnprocessableEntity:
+			case http.StatusUnauthorized:
+				return Function{}, unauthorisedErr
+			case http.StatusNotFound:
+				return Function{}, errors.New("App not found")
+			case http.StatusForbidden, http.StatusUnprocessableEntity:
 				return Function{}, errors.New(response)
 			default:
 				return Function{}, internalErr
 			}
 		default:
+
 			return Function{}, internalErr
 		}
 	}
@@ -176,11 +195,15 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 }
 
 func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
-	_, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
+	response, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
 			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return unauthorisedErr
+			case http.StatusForbidden:
+				return errors.New(response)
 			case http.StatusNotFound:
 				return fmt.Errorf("Function with id: %s, could not be found", functionID)
 			default:
@@ -199,15 +222,22 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
-			if e.StatusCode == http.StatusNotFound {
+			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return Function{}, unauthorisedErr
+			case http.StatusForbidden:
+				return Function{}, errors.New(response)
+			case http.StatusNotFound:
 				return Function{}, errors.New("Function could not be found")
-			} else {
+			default:
 				return Function{}, internalErr
 			}
+
 		default:
 			return Function{}, internalErr
 		}
 	}
+
 	function := Function{}
 	err = json.Unmarshal([]byte(response), &function)
 	if err != nil {
@@ -242,9 +272,12 @@ func (p *PusherApi) UpdateFunction(
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
-			if e.StatusCode == http.StatusUnprocessableEntity {
+			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return Function{}, unauthorisedErr
+			case http.StatusForbidden, http.StatusUnprocessableEntity:
 				return Function{}, errors.New(response)
-			} else {
+			default:
 				return Function{}, internalErr
 			}
 		default:
@@ -271,11 +304,16 @@ func (p *PusherApi) InvokeFunction(appID string, functionID string, data string,
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
-			if e.StatusCode == http.StatusNotFound {
+			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return "", unauthorisedErr
+			case http.StatusForbidden:
+				return "", errors.New(response)
+			case http.StatusNotFound:
 				return "", errors.New("Function could not be found")
+			default:
+				return "", internalErr
 			}
-
-			return "", internalErr
 		default:
 			return "", internalErr
 		}
@@ -289,11 +327,16 @@ func (p *PusherApi) GetFunctionLogs(appID string, functionID string) (FunctionLo
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
-			if e.StatusCode == http.StatusNotFound {
+			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return FunctionLogs{}, unauthorisedErr
+			case http.StatusForbidden:
+				return FunctionLogs{}, errors.New(response)
+			case http.StatusNotFound:
 				return FunctionLogs{}, errors.New("Function could not be found")
+			default:
+				return FunctionLogs{}, internalErr
 			}
-
-			return FunctionLogs{}, internalErr
 		default:
 			return FunctionLogs{}, internalErr
 		}
@@ -333,7 +376,9 @@ func (p *PusherApi) CreateFunctionConfig(appID string, name string, description 
 		switch e := err.(type) {
 		case *HttpStatusError:
 			switch e.StatusCode {
-			case http.StatusUnprocessableEntity:
+			case http.StatusUnauthorized:
+				return FunctionConfig{}, unauthorisedErr
+			case http.StatusForbidden, http.StatusUnprocessableEntity:
 				return FunctionConfig{}, errors.New(response)
 			default:
 				return FunctionConfig{}, internalErr
@@ -363,7 +408,9 @@ func (p *PusherApi) UpdateFunctionConfig(appID string, name string, description 
 		switch e := err.(type) {
 		case *HttpStatusError:
 			switch e.StatusCode {
-			case http.StatusUnprocessableEntity:
+			case http.StatusUnauthorized:
+				return FunctionConfig{}, unauthorisedErr
+			case http.StatusForbidden, http.StatusUnprocessableEntity:
 				return FunctionConfig{}, errors.New(response)
 			default:
 				return FunctionConfig{}, internalErr
@@ -382,11 +429,16 @@ func (p *PusherApi) UpdateFunctionConfig(appID string, name string, description 
 }
 
 func (p *PusherApi) DeleteFunctionConfig(appID string, name string) error {
-	_, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionConfigApiEndpoint, appID, name), nil)
+	response, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionConfigApiEndpoint, appID, name), nil)
+
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
 			switch e.StatusCode {
+			case http.StatusUnauthorized:
+				return unauthorisedErr
+			case http.StatusForbidden, http.StatusUnprocessableEntity:
+				return errors.New(response)
 			case http.StatusNotFound:
 				return fmt.Errorf("Function config with name: %s, could not be found", name)
 			default:
