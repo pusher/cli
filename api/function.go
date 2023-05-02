@@ -15,7 +15,7 @@ type FunctionService interface {
 	CreateFunction(appID string, name string, events []string, body io.Reader, mode string) (Function, error)
 	DeleteFunction(appID string, functionID string) error
 	GetFunction(appID string, functionID string) (Function, error)
-	UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader) (Function, error)
+	UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader, mode string) (Function, error)
 	GetFunctionLogs(appID string, functionID string) (FunctionLogs, error)
 	GetFunctionConfigsForApp(appID string) ([]FunctionConfig, error)
 	CreateFunctionConfig(appID string, name string, description string, paramType string, content string) (FunctionConfig, error)
@@ -28,6 +28,7 @@ type Function struct {
 	ID     string   `json:"id"`
 	Name   string   `json:"name"`
 	Events []string `json:"events"`
+	Mode   string   `json:"mode"`
 	Body   []byte   `json:"body"`
 }
 
@@ -42,10 +43,10 @@ type FunctionRequestBody struct {
 }
 
 type FunctionRequestBodyFunction struct {
-	Name   string   `json:"name"`
-	Events []string `json:"events"`
-	Body   []byte   `json:"body"`
-	Mode   string   `json:"mode,omitempty"`
+	Name   string    `json:"name,omitempty"`
+	Events *[]string `json:"events,omitempty"`
+	Body   []byte    `json:"body,omitempty"`
+	Mode   string    `json:"mode,omitempty"`
 }
 
 type InvokeFunctionRequest struct {
@@ -82,7 +83,7 @@ const FunctionConfigApiEndpoint = "/apps/%s/function_configs/%s.json"
 
 var internalErr = errors.New("Pusher encountered an error, please retry")
 
-func NewCreateFunctionRequestBody(name string, events []string, body []byte, mode string) FunctionRequestBody {
+func NewCreateFunctionRequestBody(name string, events *[]string, body []byte, mode string) FunctionRequestBody {
 	return FunctionRequestBody{
 		Function: FunctionRequestBodyFunction{
 			Name:   name,
@@ -93,12 +94,13 @@ func NewCreateFunctionRequestBody(name string, events []string, body []byte, mod
 	}
 }
 
-func NewUpdateFunctionRequestBody(name string, events []string, body []byte) FunctionRequestBody {
+func NewUpdateFunctionRequestBody(name string, events *[]string, mode string, body []byte) FunctionRequestBody {
 	return FunctionRequestBody{
 		Function: FunctionRequestBodyFunction{
 			Name:   name,
 			Events: events,
 			Body:   body,
+			Mode:   mode,
 		},
 	}
 }
@@ -138,7 +140,13 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 	if err != nil {
 		return Function{}, fmt.Errorf("could not create function archive: %w", err)
 	}
-	request := NewCreateFunctionRequestBody(name, events, bodyBytes, mode)
+
+	var pEvents *[]string = nil
+	if events != nil {
+		pEvents = &events
+	}
+
+	request := NewCreateFunctionRequestBody(name, pEvents, bodyBytes, mode)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
@@ -208,12 +216,23 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 	return function, nil
 }
 
-func (p *PusherApi) UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader) (Function, error) {
-	bodyBytes, err := io.ReadAll(body)
-	if err != nil {
-		return Function{}, fmt.Errorf("could not create function archive: %w", err)
+func (p *PusherApi) UpdateFunction(
+	appID string, functionID string, name string, events []string, body io.Reader, mode string) (Function, error) {
+	var bodyBytes []byte = nil
+	var err error
+
+	if body != nil {
+		bodyBytes, err = io.ReadAll(body)
+		if err != nil {
+			return Function{}, fmt.Errorf("could not create function archive: %w", err)
+		}
 	}
-	request := NewUpdateFunctionRequestBody(name, events, bodyBytes)
+
+	var pEvents *[]string = nil
+	if events != nil {
+		pEvents = &events
+	}
+	request := NewUpdateFunctionRequestBody(name, pEvents, mode, bodyBytes)
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {

@@ -2,7 +2,7 @@
 
 This is a tool that allows developers access to their Pusher accounts via a command line interface. 
 
-This is an alpha release. We recommend using it for non-production apps. It may eat your laundry! We'd appreciate your feedback.
+This is a beta release. We recommend using it for non-production apps unless otherwise advised. We'd appreciate your feedback.
 
 ## Usage
 

@@ -250,9 +250,9 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 				cmd.Println(string(functionsJSONBytes))
 			} else {
 				table := newTable(cmd.OutOrStdout())
-				table.SetHeader([]string{"ID", "Name", "Events"})
+				table.SetHeader([]string{"ID", "Name", "Mode", "Events"})
 				for _, function := range functions {
-					table.Append([]string{function.ID, function.Name, strings.Join(function.Events, ",")})
+					table.Append([]string{function.ID, function.Name, function.Mode, strings.Join(function.Events, ",")})
 				}
 				table.Render()
 			}
@@ -263,6 +263,17 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 	return cmd
 }
 
+func cleanMode(m string) string {
+	switch strings.ToLower(m) {
+	case "sync", "synch", "synchronous":
+		return "synchronous"
+	case "async", "asynch", "asynchronous":
+		return "asynchronous"
+	default:
+		return m
+	}
+}
+
 func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "create <path to code directory>",
@@ -271,7 +282,12 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 		RunE: func(cmd *cobra.Command, args []string) error {
 			archive := ZipFolder(args[0])
 
-			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, archive, commands.FunctionMode)
+			mode := cleanMode(commands.FunctionMode)
+			if mode == "" {
+				mode = "asynchronous"
+			}
+
+			function, err := functionService.CreateFunction(commands.AppID, commands.FunctionName, commands.FunctionEvents, archive, mode)
 			if err != nil {
 				return err
 			}
@@ -291,12 +307,8 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 	if err != nil {
 		return nil, err
 	}
-	cmd.PersistentFlags().StringVar(&commands.FunctionMode, "mode", "", "Function mode. Either synchronous or asynchronous")
-	err = cmd.MarkPersistentFlagRequired("mode")
-	if err != nil {
-		return nil, err
-	}
-	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", []string{}, "Channel events that trigger this function")
+	cmd.PersistentFlags().StringVar(&commands.FunctionMode, "mode", "asynchronous", "Function mode. Either synchronous or asynchronous")
+	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", nil, "Channel events that trigger this function")
 	return cmd, err
 }
 
@@ -369,6 +381,7 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 				zipFileName := fmt.Sprintf("%s.%s.zip", fn.Name, time.Now().Format("2006-01-02-150405"))
 				fmt.Fprintf(cmd.OutOrStdout(), "ID: %v\n", fn.ID)
 				fmt.Fprintf(cmd.OutOrStdout(), "Name: %v\n", fn.Name)
+				fmt.Fprintf(cmd.OutOrStdout(), "Mode: %v\n", fn.Mode)
 				fmt.Fprintf(cmd.OutOrStdout(), "Events: %v\n", strings.Join(fn.Events, ","))
 				err = os.WriteFile(zipFileName, fn.Body, 0644)
 				if err != nil {
@@ -385,13 +398,16 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 
 func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "update <function_id> <path to code directory>",
+		Use:   "update <function_id> [<path to code directory>]",
 		Short: "Update a function for a Channels app",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			archive := ZipFolder(args[1])
+			var archive io.Reader = nil
+			if len(args) >= 2 {
+				archive = ZipFolder(args[1])
+			}
 
-			function, err := functionService.UpdateFunction(commands.AppID, args[0], commands.FunctionName, commands.FunctionEvents, archive)
+			function, err := functionService.UpdateFunction(commands.AppID, args[0], commands.FunctionName, commands.FunctionEvents, archive, cleanMode(commands.FunctionMode))
 			if err != nil {
 				return err
 			}
@@ -407,11 +423,8 @@ func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Comm
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
 	cmd.PersistentFlags().StringVar(&commands.FunctionName, "name", "", "Function name")
-	err := cmd.MarkPersistentFlagRequired("name")
-	if err != nil {
-		return nil, err
-	}
-	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", []string{}, "Channel events that trigger this function")
+	cmd.PersistentFlags().StringSliceVar(&commands.FunctionEvents, "events", nil, "Channel events that trigger this function")
+	cmd.PersistentFlags().StringVar(&commands.FunctionMode, "mode", "", "Function mode. Either synchronous or asynchronous")
 	return cmd, nil
 }
 
