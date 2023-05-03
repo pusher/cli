@@ -10,14 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//GenerateClient generates a client that can subscribe to channels on an app.
+// GenerateClient generates a client that can subscribe to channels on an app.
 var GenerateClient = &cobra.Command{
 	Use:   "client",
 	Short: "Generate a client for your Channels app",
 	Args:  cobra.NoArgs,
 }
 
-//GenerateWeb generates a web client that can subscribe to channels on an app.
+// GenerateWeb generates a web client that can subscribe to channels on an app.
 var GenerateWeb = &cobra.Command{
 	Use:   "web",
 	Short: "Generate a web client for your Channels app",
@@ -29,14 +29,15 @@ var GenerateWeb = &cobra.Command{
 			return
 		}
 
-		app, err := api.GetApp(commands.AppID)
+		p := api.NewPusherApi()
+		app, err := p.GetApp(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		token, err := api.GetToken(commands.AppID)
+		token, err := p.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			return
@@ -52,8 +53,8 @@ var GenerateWeb = &cobra.Command{
 			Pusher.logToConsole = true;
 			
 			var pusher = new Pusher('` + token.Key + `', {
-				wsHost: 'ws-` + app.Cluster + `.pusher.com',
-				httpHost: 'sockjs-` + app.Cluster + `.pusher.com',
+				wsHost: '` + wsHost(app.Cluster) + `',
+				httpHost: '` + httpHost(app.Cluster) + `',
 				encrypted: true
 			});
 			

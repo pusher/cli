@@ -8,6 +8,7 @@ import (
 	"github.com/pusher/cli/commands"
 	"github.com/pusher/pusher-http-go"
 	"github.com/spf13/cobra"
+	"github.com/theherk/viper"
 )
 
 // Trigger allows the user to trigger an event on a particular channel.
@@ -41,14 +42,15 @@ var Trigger = &cobra.Command{
 			return
 		}
 
-		app, err := api.GetApp(commands.AppID)
+		p := api.NewPusherApi()
+		app, err := p.GetApp(commands.AppID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Could not get app the app: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Could not get the app: %s\n", err.Error())
 			os.Exit(1)
 			return
 		}
 
-		token, err := api.GetToken(commands.AppID)
+		token, err := p.GetToken(commands.AppID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not get app token: %s\n", err.Error())
 			os.Exit(1)
@@ -60,6 +62,7 @@ var Trigger = &cobra.Command{
 			Key:     token.Key,
 			Secret:  token.Secret,
 			Cluster: app.Cluster,
+			Host:    viper.GetString("apihost"),
 		}
 
 		err = client.Trigger(commands.ChannelName, commands.EventName, commands.Message)

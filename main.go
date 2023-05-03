@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pusher/cli/api"
 	"github.com/pusher/cli/commands/auth"
 	"github.com/pusher/cli/commands/channels"
 	"github.com/pusher/cli/commands/cli"
@@ -17,7 +18,13 @@ func main() {
 
 	var Apps = &cobra.Command{Use: "apps",
 		Short: "Manage your Channels Apps"}
-	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo)
+	funcCmd, err := channels.NewFunctionsCommand(api.NewPusherApi())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
+		os.Exit(1)
+		return
+	}
+	Apps.AddCommand(channels.Apps, channels.Tokens, channels.Subscribe, channels.Trigger, channels.ListChannels, channels.ChannelInfo, funcCmd)
 
 	var Generate = &cobra.Command{Use: "generate",
 		Short: "Generate a Channels client, server, or Authorisation server"}
@@ -30,7 +37,7 @@ func main() {
 	rootCmd.AddCommand(Channels)
 	rootCmd.AddCommand(auth.Login, auth.Logout)
 	rootCmd.AddCommand(cli.Version)
-	err := rootCmd.Execute()
+	err = rootCmd.Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not execute command: %s\n", err.Error())
 		os.Exit(1)

@@ -2,7 +2,7 @@
 
 This is a tool that allows developers access to their Pusher accounts via a command line interface. 
 
-This is an alpha release. We recommend using it for non-production apps. It may eat your laundry! We'd appreciate your feedback.
+This is a beta release. We recommend using it for non-production apps unless otherwise advised. We'd appreciate your feedback.
 
 ## Usage
 
@@ -41,3 +41,17 @@ We [publish binaries on GitHub](https://github.com/pusher/cli/releases) and we u
 
 1. `git tag -a v0.14 -m "v0.14"`
 1. `git push origin v0.14`
+
+### Configuration
+
+`pusher login` creates a file `~/.config/pusher.json` (or updates it if it already exists).
+If you need to point the Pusher CLI to different servers (e.g. when testing), you can change the `endpoint` value and add new name/value pairs as necessary:
+```JSON
+{
+  "endpoint": "https://cli.another.domain.com",
+  "token": "my-secret-api-key",
+  "apihost": "api-mycluster.another.domain.com",
+  "httphost": "sockjs-mycluster.another.domain.com",
+  "wshost": "ws-mycluster.another.domain.com"
+}
+```
