@@ -250,9 +250,9 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 				cmd.Println(string(functionsJSONBytes))
 			} else {
 				table := newTable(cmd.OutOrStdout())
-				table.SetHeader([]string{"ID", "Name", "Mode", "Events"})
+				table.SetHeader([]string{"Name", "Mode", "Events"})
 				for _, function := range functions {
-					table.Append([]string{function.ID, function.Name, function.Mode, strings.Join(function.Events, ",")})
+					table.Append([]string{function.Name, function.Mode, strings.Join(function.Events, ",")})
 				}
 				table.Render()
 			}
