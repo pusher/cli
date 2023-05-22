@@ -205,7 +205,7 @@ func (p *PusherApi) DeleteFunction(appID string, functionName string) error {
 			case http.StatusForbidden:
 				return errors.New(response)
 			case http.StatusNotFound:
-				return fmt.Errorf("Function with id: %s, could not be found", functionName)
+				return fmt.Errorf("Function with name: %s, could not be found", functionName)
 			default:
 				return internalErr
 			}
