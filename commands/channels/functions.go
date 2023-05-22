@@ -296,7 +296,7 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 				functionJSONBytes, _ := json.Marshal(function)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "created function %s with id: %v\n", function.Name, function.ID)
+				fmt.Fprintf(cmd.OutOrStdout(), "created function %s\n", function.Name)
 			}
 			return nil
 		},
