@@ -250,9 +250,9 @@ func NewFunctionsListCommand(functionService api.FunctionService) *cobra.Command
 				cmd.Println(string(functionsJSONBytes))
 			} else {
 				table := newTable(cmd.OutOrStdout())
-				table.SetHeader([]string{"ID", "Name", "Mode", "Events"})
+				table.SetHeader([]string{"Name", "Mode", "Events"})
 				for _, function := range functions {
-					table.Append([]string{function.ID, function.Name, function.Mode, strings.Join(function.Events, ",")})
+					table.Append([]string{function.Name, function.Mode, strings.Join(function.Events, ",")})
 				}
 				table.Render()
 			}
@@ -296,7 +296,7 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 				functionJSONBytes, _ := json.Marshal(function)
 				fmt.Fprintln(cmd.OutOrStdout(), string(functionJSONBytes))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), "created function %s with id: %v\n", function.Name, function.ID)
+				fmt.Fprintf(cmd.OutOrStdout(), "created function %s\n", function.Name)
 			}
 			return nil
 		},
@@ -314,7 +314,7 @@ func NewFunctionsCreateCommand(functionService api.FunctionService) (*cobra.Comm
 
 func NewFunctionDeleteCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delete <function_id>",
+		Use:   "delete <function_name>",
 		Short: "Delete a function from a Channels app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -332,7 +332,7 @@ func NewFunctionDeleteCommand(functionService api.FunctionService) *cobra.Comman
 
 func NewFunctionInvokeCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "invoke <function_id>",
+		Use:   "invoke <function_name>",
 		Short: "invoke a function to test it",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -365,7 +365,7 @@ func NewFunctionInvokeCommand(functionService api.FunctionService) (*cobra.Comma
 
 func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get <function_id>",
+		Use:   "get <function_name>",
 		Short: "Downloads a function from a Channels app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -398,7 +398,7 @@ func NewFunctionGetCommand(functionService api.FunctionService) *cobra.Command {
 
 func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "update <function_id> [<path to code directory>]",
+		Use:   "update <function_name> [<path to code directory>]",
 		Short: "Update a function for a Channels app",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -430,7 +430,7 @@ func NewFunctionsUpdateCommand(functionService api.FunctionService) (*cobra.Comm
 
 func NewFunctionGetLogsCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "logs <function_id>",
+		Use:   "logs <function_name>",
 		Short: "Get logs of a specific function",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

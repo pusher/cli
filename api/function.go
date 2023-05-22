@@ -13,15 +13,15 @@ import (
 type FunctionService interface {
 	GetAllFunctionsForApp(name string) ([]Function, error)
 	CreateFunction(appID string, name string, events []string, body io.Reader, mode string) (Function, error)
-	DeleteFunction(appID string, functionID string) error
-	GetFunction(appID string, functionID string) (Function, error)
-	UpdateFunction(appID string, functionID string, name string, events []string, body io.Reader, mode string) (Function, error)
-	GetFunctionLogs(appID string, functionID string) (FunctionLogs, error)
+	DeleteFunction(appID string, functionName string) error
+	GetFunction(appID string, functionName string) (Function, error)
+	UpdateFunction(appID string, functionName string, name string, events []string, body io.Reader, mode string) (Function, error)
+	GetFunctionLogs(appID string, functionName string) (FunctionLogs, error)
 	GetFunctionConfigsForApp(appID string) ([]FunctionConfig, error)
 	CreateFunctionConfig(appID string, name string, description string, paramType string, content string) (FunctionConfig, error)
 	UpdateFunctionConfig(appID string, name string, description string, content string) (FunctionConfig, error)
 	DeleteFunctionConfig(appID string, name string) error
-	InvokeFunction(appID string, functionId string, data string, event string, channel string) (string, error)
+	InvokeFunction(appID string, functionName string, data string, event string, channel string) (string, error)
 }
 
 type Function struct {
@@ -194,8 +194,8 @@ func (p *PusherApi) CreateFunction(appID string, name string, events []string, b
 	return function, nil
 }
 
-func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
-	response, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
+func (p *PusherApi) DeleteFunction(appID string, functionName string) error {
+	response, err := p.makeRequest("DELETE", fmt.Sprintf(FunctionApiEndpoint, appID, functionName), nil)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
@@ -205,7 +205,7 @@ func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
 			case http.StatusForbidden:
 				return errors.New(response)
 			case http.StatusNotFound:
-				return fmt.Errorf("Function with id: %s, could not be found", functionID)
+				return fmt.Errorf("Function with name: %s, could not be found", functionName)
 			default:
 				return internalErr
 			}
@@ -217,8 +217,8 @@ func (p *PusherApi) DeleteFunction(appID string, functionID string) error {
 	return nil
 }
 
-func (p *PusherApi) GetFunction(appID string, functionID string) (Function, error) {
-	response, err := p.makeRequest("GET", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), nil)
+func (p *PusherApi) GetFunction(appID string, functionName string) (Function, error) {
+	response, err := p.makeRequest("GET", fmt.Sprintf(FunctionApiEndpoint, appID, functionName), nil)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
@@ -247,7 +247,7 @@ func (p *PusherApi) GetFunction(appID string, functionID string) (Function, erro
 }
 
 func (p *PusherApi) UpdateFunction(
-	appID string, functionID string, name string, events []string, body io.Reader, mode string) (Function, error) {
+	appID string, functionName string, name string, events []string, body io.Reader, mode string) (Function, error) {
 	var bodyBytes []byte = nil
 	var err error
 
@@ -268,7 +268,8 @@ func (p *PusherApi) UpdateFunction(
 	if err != nil {
 		return Function{}, fmt.Errorf("could not serialize function: %w", err)
 	}
-	response, err := p.makeRequest("PUT", fmt.Sprintf(FunctionApiEndpoint, appID, functionID), requestJson)
+	url := fmt.Sprintf(FunctionApiEndpoint, appID, functionName)
+	response, err := p.makeRequest("PUT", url, requestJson)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
@@ -293,14 +294,14 @@ func (p *PusherApi) UpdateFunction(
 	return function, nil
 }
 
-func (p *PusherApi) InvokeFunction(appID string, functionID string, data string, event string, channel string) (string, error) {
+func (p *PusherApi) InvokeFunction(appID string, functionName string, data string, event string, channel string) (string, error) {
 	request := InvokeFunctionRequest{Data: data, Event: event, Channel: channel}
 
 	requestJson, err := json.Marshal(&request)
 	if err != nil {
 		return "", fmt.Errorf("could not serialize function: %w", err)
 	}
-	response, err := p.makeRequest("POST", fmt.Sprintf("/apps/%s/functions/%s/invoke.json", appID, functionID), requestJson)
+	response, err := p.makeRequest("POST", fmt.Sprintf("/apps/%s/functions/%s/invoke.json", appID, functionName), requestJson)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
@@ -322,8 +323,8 @@ func (p *PusherApi) InvokeFunction(appID string, functionID string, data string,
 	return response, nil
 }
 
-func (p *PusherApi) GetFunctionLogs(appID string, functionID string) (FunctionLogs, error) {
-	response, err := p.makeRequest("GET", fmt.Sprintf("/apps/%s/functions/%s/logs.json", appID, functionID), nil)
+func (p *PusherApi) GetFunctionLogs(appID string, functionName string) (FunctionLogs, error) {
+	response, err := p.makeRequest("GET", fmt.Sprintf("/apps/%s/functions/%s/logs.json", appID, functionName), nil)
 	if err != nil {
 		switch e := err.(type) {
 		case *HttpStatusError:
