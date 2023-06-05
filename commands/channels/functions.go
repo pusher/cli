@@ -19,6 +19,12 @@ import (
 )
 
 func NewConfigListCommand(pusher api.FunctionService) *cobra.Command {
+	convertParamType := func(pt string) string {
+		if strings.ToLower(pt) == "param" {
+			return "plaintext"
+		}
+		return pt
+	}
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List function configs for an Channels app",
@@ -36,7 +42,7 @@ func NewConfigListCommand(pusher api.FunctionService) *cobra.Command {
 				table := newTable(cmd.OutOrStdout())
 				table.SetHeader([]string{"Name", "Desciption", "Type"})
 				for _, config := range configs {
-					table.Append([]string{config.Name, config.Description, config.ParamType})
+					table.Append([]string{config.Name, config.Description, convertParamType(config.ParamType)})
 				}
 				table.Render()
 			}
@@ -78,7 +84,7 @@ func NewConfigCreateCommand(functionService api.FunctionService) (*cobra.Command
 	if err != nil {
 		return nil, err
 	}
-	cmd.PersistentFlags().StringVar(&commands.FunctionConfigParamType, "type", "", "Function config type, valid options: param|secret")
+	cmd.PersistentFlags().StringVar(&commands.FunctionConfigParamType, "type", "", "Function config type, valid options: plaintext|secret")
 	err = cmd.MarkPersistentFlagRequired("type")
 	if err != nil {
 		return nil, err

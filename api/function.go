@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type FunctionService interface {
@@ -107,10 +108,16 @@ func NewUpdateFunctionRequestBody(name string, events *[]string, mode string, bo
 }
 
 func NewCreateFunctionConfigRequest(name string, description string, paramType string, content string) CreateFunctionConfigRequest {
+	convertParamType := func(pt string) string {
+		if strings.ToLower(pt) == "plaintext" {
+			return "param"
+		}
+		return pt
+	}
 	return CreateFunctionConfigRequest{
 		Name:        name,
 		Description: description,
-		ParamType:   paramType,
+		ParamType:   convertParamType(paramType),
 		Content:     content,
 	}
 }
