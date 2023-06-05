@@ -130,27 +130,22 @@ func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command
 	return cmd, nil
 }
 
-func NewConfigDeleteCommand(functionService api.FunctionService) (*cobra.Command, error) {
+func NewConfigDeleteCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a function config from a Channels app",
-		Args:  cobra.NoArgs,
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := functionService.DeleteFunctionConfig(commands.AppID, commands.FunctionConfigName)
+			err := functionService.DeleteFunctionConfig(commands.AppID, args[0])
 			if err != nil {
 				return err
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "deleted function config %s\n", commands.FunctionConfigName)
+			fmt.Fprintf(cmd.OutOrStdout(), "deleted function config %s\n", args[0])
 			return nil
 		},
 	}
-	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
-	err := cmd.MarkPersistentFlagRequired("name")
-	if err != nil {
-		return nil, err
-	}
-	return cmd, nil
+	return cmd
 }
 
 func NewConfigCommand(pusher api.FunctionService) (*cobra.Command, error) {
@@ -170,11 +165,7 @@ func NewConfigCommand(pusher api.FunctionService) (*cobra.Command, error) {
 		return nil, err
 	}
 	cmd.AddCommand(c)
-	c, err = NewConfigDeleteCommand(pusher)
-	if err != nil {
-		return nil, err
-	}
-	cmd.AddCommand(c)
+	cmd.AddCommand(NewConfigDeleteCommand(pusher))
 	return cmd, nil
 }
 
