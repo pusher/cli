@@ -99,11 +99,11 @@ func NewConfigCreateCommand(functionService api.FunctionService) (*cobra.Command
 
 func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:   "update",
+		Use:   "update <config_name>",
 		Short: "Update a function config for a Channels app",
-		Args:  cobra.NoArgs,
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			config, err := functionService.UpdateFunctionConfig(commands.AppID, commands.FunctionConfigName, commands.FunctionConfigDescription, commands.FunctionConfigContent)
+			config, err := functionService.UpdateFunctionConfig(commands.AppID, args[0], commands.FunctionConfigDescription, commands.FunctionConfigContent)
 			if err != nil {
 				return err
 			}
@@ -118,13 +118,8 @@ func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command
 		},
 	}
 	cmd.PersistentFlags().BoolVar(&commands.OutputAsJSON, "json", false, "")
-	cmd.PersistentFlags().StringVar(&commands.FunctionConfigName, "name", "", "Function config name. Can only contain A-Za-z0-9-_")
-	err := cmd.MarkPersistentFlagRequired("name")
-	if err != nil {
-		return nil, err
-	}
 	cmd.PersistentFlags().StringVar(&commands.FunctionConfigDescription, "description", "", "Function config description")
-	err = cmd.MarkPersistentFlagRequired("description")
+	err := cmd.MarkPersistentFlagRequired("description")
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +133,7 @@ func NewConfigUpdateCommand(functionService api.FunctionService) (*cobra.Command
 
 func NewConfigDeleteCommand(functionService api.FunctionService) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delete",
+		Use:   "delete <config_name>",
 		Short: "Delete a function config from a Channels app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
